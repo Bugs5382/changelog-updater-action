@@ -22,6 +22,7 @@ import (
 	"os"
 
 	"github.com/Bugs5382/changelog-updater-action/internal/logging"
+	"github.com/Bugs5382/changelog-updater-action/internal/process"
 	"github.com/enescakir/emoji"
 	"github.com/rs/zerolog/log"
 	flag "github.com/spf13/pflag"
@@ -37,7 +38,7 @@ func main() {
 	// setup flags
 	tag := flag.StringP("tag", "t", "", "The release tag name")
 	notes := flag.StringP("notes", "n", "", "The release notes body")
-	_ = flag.BoolP("diff", "d", false, "Show the diff between commit and tag")
+	_ = flag.BoolP("diff", "d", false, "Show the diff (if any) of changes")
 	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
 
 	// parse
@@ -51,13 +52,17 @@ func main() {
 	log.Debug().Msgf("%s Version: %s", emoji.Construction.String(), Version)
 	log.Debug().Msgf("%s Build SHA: %s", emoji.Construction.String(), Gitsha)
 
-	// first check
+	// tag check
 	if *tag == "" {
-		log.Error().Msgf("%s Tag name is required.", emoji.Bomb)
+		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
 		os.Exit(1)
 	}
 
-	log.Info().Msg(*tag)
-	log.Debug().Msg(*notes)
+	// process
+	err := process.Run(*tag, *notes)
+	if err != nil {
+		log.Error().Msgf("%s Update failed: %s", emoji.Bomb.String(), err)
+		os.Exit(1)
+	}
 
 }

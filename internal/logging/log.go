@@ -20,7 +20,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import (
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -70,27 +69,4 @@ func setLogFormat() {
 	} else {
 		return
 	}
-}
-
-func setLogLevel() {
-	levelStr := os.Getenv("LOG_LEVEL")
-
-	if levelStr == "" {
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-		return
-	}
-
-	parsedLevel, err := zerolog.ParseLevel(levelStr)
-	if err == nil {
-		zerolog.SetGlobalLevel(parsedLevel)
-		return
-	}
-
-	if levelInt, err := strconv.Atoi(levelStr); err == nil {
-		zerolog.SetGlobalLevel(zerolog.Level(levelInt))
-		return
-	}
-
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	log.Debug().Msgf("Invalid log level '%s', defaulting to info", levelStr)
 }
