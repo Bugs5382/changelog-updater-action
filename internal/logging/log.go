@@ -24,29 +24,52 @@ import (
 	"strings"
 	"time"
 
-	"github.com/enescakir/emoji"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 // Init sets up logging configuration
-func Init() {
-	setLogLevel()
+func Init(verbose bool) {
+	// If we are in a test, stop everything immediately.
+	if isTest() {
+		zerolog.SetGlobalLevel(zerolog.Disabled)
+		return
+	}
+
 	setLogFormat()
+
+	levelStr := os.Getenv("LOG_LEVEL")
+	if levelStr != "" {
+		if parsedLevel, err := zerolog.ParseLevel(strings.ToLower(levelStr)); err == nil {
+			zerolog.SetGlobalLevel(parsedLevel)
+			return
+		}
+	}
+
+	if verbose {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+}
+
+func isTest() bool {
+	return strings.HasSuffix(os.Args[0], ".test") ||
+		strings.Contains(strings.Join(os.Args, " "), "-test.")
 }
 
 func setLogFormat() {
 	format := strings.ToLower(os.Getenv("LOG_FORMAT"))
 
-	if format == "json" {
+	if format == "text" {
+		// Otherwise, default to ConsoleWriter (Text)
+		log.Logger = log.Output(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: time.RFC3339,
+		})
+	} else {
 		return
 	}
-
-	// Otherwise, default to ConsoleWriter (Text)
-	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out:        os.Stderr,
-		TimeFormat: time.RFC3339,
-	})
 }
 
 func setLogLevel() {
@@ -70,9 +93,4 @@ func setLogLevel() {
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	log.Debug().Msgf("Invalid log level '%s', defaulting to info", levelStr)
-}
-
-// Emj Add a space helper
-func Emj(e emoji.Emoji) string {
-	return e.String() + " "
 }

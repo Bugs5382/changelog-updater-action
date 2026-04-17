@@ -40,7 +40,7 @@ build::
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/$(ARTIFACT_NAME)-$(GOOS)-$(GOARCH) \
 	-ldflags $(LD_FLAGS) \
 	./cmd/action
-	chmod +x $(WORKING_DIR)/bin/${ARTIFACT_NAME}
+	chmod +x $(WORKING_DIR)/bin/$(ARTIFACT_NAME)-$(GOOS)-$(GOARCH)
 
 .PHONY: test
 test::

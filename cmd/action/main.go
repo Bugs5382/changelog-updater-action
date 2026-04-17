@@ -19,20 +19,45 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 import (
-	"github.com/Bugs5382/changelog-updater-action/cmd/action/init/logging"
+	"os"
+
+	"github.com/Bugs5382/changelog-updater-action/internal/logging"
 	"github.com/enescakir/emoji"
 	"github.com/rs/zerolog/log"
+	flag "github.com/spf13/pflag"
 )
 
 var (
 	Version = "local"
-	Gitsha  = "?"
+	Gitsha  = "Unknown"
 )
 
 func main() {
-	logging.Init()
 
-	log.Info().Msgf("%s Changelog Updater Action by Shane", logging.Emj(emoji.Information))
-	log.Debug().Msgf("%s Version: %s", logging.Emj(emoji.Construction), Version)
-	log.Debug().Msgf("%s Build SHA: %s", logging.Emj(emoji.Construction), Gitsha)
+	// setup flags
+	tag := flag.StringP("tag", "t", "", "The release tag name")
+	notes := flag.StringP("notes", "n", "", "The release notes body")
+	_ = flag.BoolP("diff", "d", false, "Show the diff between commit and tag")
+	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
+
+	// parse
+	flag.Parse()
+
+	// setup logging
+	logging.Init(*verbose)
+
+	// start
+	log.Info().Msgf("%s Changelog Updater Action by Shane", emoji.Information.String())
+	log.Debug().Msgf("%s Version: %s", emoji.Construction.String(), Version)
+	log.Debug().Msgf("%s Build SHA: %s", emoji.Construction.String(), Gitsha)
+
+	// first check
+	if *tag == "" {
+		log.Error().Msgf("%s Tag name is required.", emoji.Bomb)
+		os.Exit(1)
+	}
+
+	log.Info().Msg(*tag)
+	log.Debug().Msg(*notes)
+
 }
