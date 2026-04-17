@@ -20,7 +20,7 @@ This project is a high-performance successor to `stefanzweifel/changelog-updater
 
 ## 🛠️ Implementation Example
 
-This workflow integrates with **Release Drafter** — the gold standard for drafting releases—to pull anticipated version names and bodies directly into your file.
+This workflow integrates with **Release Drafter** — the gold standard for drafting releases — to pull anticipated version names and bodies directly into your file.
 
 ```yaml
 jobs:
