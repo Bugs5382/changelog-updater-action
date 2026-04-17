@@ -19,7 +19,8 @@ GOLIC_VERSION  ?= v0.1.2
 
 VERSION ?= v0.0.0
 GITSHA ?= $(git rev-parse --short HEAD)
-
+GOOS     ?= $(shell go env GOOS)
+GOARCH   ?= $(shell go env GOARCH)
 LD_FLAGS := "-X 'main.Version=$(VERSION)' -X 'main.Gitsha=$(GITSHA)'"
 
 ifndef NO_COLOR
@@ -36,7 +37,7 @@ clean::
 
 .PHONY: build
 build::
-	go build -o $(WORKING_DIR)/bin/${ARTIFACT_NAME} \
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/$(ARTIFACT_NAME)-$(GOOS)-$(GOARCH) \
 	-ldflags $(LD_FLAGS) \
 	./cmd/action
 	chmod +x $(WORKING_DIR)/bin/${ARTIFACT_NAME}
@@ -52,7 +53,7 @@ lint-init:
 	brew install yamllint
 
 .PHONY: lint
-lint: test license
+lint: license
 	goimports -w ./
 	golangci-lint run
 	yamllint .

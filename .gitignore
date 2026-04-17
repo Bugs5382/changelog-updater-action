@@ -24,6 +24,7 @@ temp
 !README.md
 !LICENSE
 !release-drafter.yml
+!examples/*
 
 # ...even if they are in subdirectories
 !*/
