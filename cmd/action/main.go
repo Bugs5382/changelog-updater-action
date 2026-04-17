@@ -20,6 +20,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import (
 	"os"
+	"time"
 
 	"github.com/Bugs5382/changelog-updater-action/internal/logging"
 	"github.com/Bugs5382/changelog-updater-action/internal/process"
@@ -38,8 +39,11 @@ func main() {
 	// setup flags
 	tag := flag.StringP("tag", "t", "", "The release tag name")
 	notes := flag.StringP("notes", "n", "", "The release notes body")
-	_ = flag.BoolP("diff", "d", false, "Show the diff (if any) of changes")
+	_ = flag.Bool("diff", false, "Show the diff (if any) of changes")
+	dry := flag.Bool("dry", false, "Dry run, make no changes")
 	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
+	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
+	date := flag.StringP("date", "dt", time.Now().Format("2006-01-02"), "Release date")
 
 	// parse
 	flag.Parse()
@@ -47,16 +51,26 @@ func main() {
 	// setup logging
 	logging.Init(*verbose)
 
+	opts := process.Options{
+		Tag:    *tag,
+		Notes:  *notes,
+		Path:   *path,
+		Date:   *date,
+		DryRun: *dry,
+	}
+
 	// start
 	log.Info().Msgf("%s Changelog Updater Action by Shane", emoji.Information.String())
 	log.Debug().Msgf("%s Version: %s", emoji.Construction.String(), Version)
 	log.Debug().Msgf("%s Build SHA: %s", emoji.Construction.String(), Gitsha)
 
 	// process
-	err := process.Run(*tag, *notes)
+	err := process.Run(opts)
 	if err != nil {
 		log.Error().Msgf("%s Update failed: %s", emoji.Bomb.String(), err)
 		os.Exit(1)
 	}
+
+	log.Info().Msgf("%s Changelog updated successfullye", emoji.Rocket.String())
 
 }
