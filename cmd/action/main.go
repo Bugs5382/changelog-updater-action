@@ -52,12 +52,6 @@ func main() {
 	log.Debug().Msgf("%s Version: %s", emoji.Construction.String(), Version)
 	log.Debug().Msgf("%s Build SHA: %s", emoji.Construction.String(), Gitsha)
 
-	// tag check
-	if *tag == "" {
-		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
-		os.Exit(1)
-	}
-
 	// process
 	err := process.Run(*tag, *notes)
 	if err != nil {

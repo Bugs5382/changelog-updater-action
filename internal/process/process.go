@@ -1,5 +1,12 @@
 package process
 
+import (
+	"errors"
+
+	"github.com/enescakir/emoji"
+	"github.com/rs/zerolog/log"
+)
+
 /*
 ISC License
 
@@ -19,6 +26,18 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 // Run Lets go!
-func Run(t any, s string) interface{} {
+func Run(tag any, notes string) error {
+	// tag check
+	if tag == "" {
+		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
+		return errors.New("missing required --tag flag")
+	}
+
+	// notes check
+	if len(notes) <= 0 {
+		log.Error().Msgf("%s Notes are too short", emoji.Bomb.String())
+		return errors.New("notes are too short")
+	}
+
 	return nil
 }
