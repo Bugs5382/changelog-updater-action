@@ -1,12 +1,5 @@
 package process
 
-import (
-	"errors"
-
-	"github.com/enescakir/emoji"
-	"github.com/rs/zerolog/log"
-)
-
 /*
 ISC License
 
@@ -24,26 +17,3 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-
-// Run Lets go!
-func Run(tag string, notes string) error {
-	// tag check
-	if tag == "" {
-		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
-		return errors.New("missing required --tag flag")
-	}
-
-	// tag check
-	if len(tag) <= 0 {
-		log.Error().Msgf("%s Tag is too short.", emoji.Bomb.String())
-		return errors.New("tag is too short")
-	}
-
-	// notes check
-	if len(notes) <= 0 {
-		log.Error().Msgf("%s Notes are too short", emoji.Bomb.String())
-		return errors.New("notes are too short")
-	}
-
-	return nil
-}
