@@ -33,25 +33,25 @@ func TestRun(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		version string
+		tag     string
 		notes   string
 		wantErr bool
 	}{
 		{
 			name:    "valid input",
-			version: "v1.0.0",
+			tag:     "v1.0.0",
 			notes:   "Fixed a bug in the logger",
 			wantErr: false,
 		},
 		{
 			name:    "empty version",
-			version: "",
+			tag:     "",
 			notes:   "Some notes here",
 			wantErr: true,
 		},
 		{
 			name:    "notes too short",
-			version: "v1.1.0",
+			tag:     "v1.1.0",
 			notes:   "",
 			wantErr: true,
 		},
@@ -59,7 +59,7 @@ func TestRun(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := process.Run(tt.version, tt.notes)
+			err := process.Run(tt.tag, tt.notes)
 
 			// Check if we got an error when we expected one (or vice versa)
 			if (err != nil) != tt.wantErr {

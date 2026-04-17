@@ -33,12 +33,6 @@ func Run(tag string, notes string) error {
 		return errors.New("missing required --tag flag")
 	}
 
-	// tag check
-	if len(tag) <= 0 {
-		log.Error().Msgf("%s Tag is too short.", emoji.Bomb.String())
-		return errors.New("tag is too short")
-	}
-
 	// notes check
 	if len(notes) <= 0 {
 		log.Error().Msgf("%s Notes are too short", emoji.Bomb.String())
