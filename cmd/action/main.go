@@ -43,7 +43,7 @@ func main() {
 	dry := flag.Bool("dry", false, "Dry run, make no changes")
 	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
 	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
-	date := flag.StringP("date", "dt", time.Now().Format("2006-01-02"), "Release date")
+	date := flag.String("date", time.Now().Format("2006-01-02"), "Release date")
 
 	// parse
 	flag.Parse()
@@ -71,6 +71,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info().Msgf("%s Changelog updated successfullye", emoji.Rocket.String())
+	log.Info().Msgf("%s Changelog updated successfully", emoji.Rocket.String())
 
 }

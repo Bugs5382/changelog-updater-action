@@ -100,8 +100,8 @@ func TestProcess(t *testing.T) {
 	t.Parallel()
 
 	t.Run("step 1 -- add first version", func(t *testing.T) {
-		initial := baseContent + "\n## v1.0.0\n"
-		dir := writeChangelog(t, initial)
+		// A brand-new changelog with just the top title — no version header yet.
+		dir := writeChangelog(t, baseContent)
 
 		err := Run(Options{
 			Tag:   "v1.0.0",
@@ -247,11 +247,12 @@ func TestProcess(t *testing.T) {
 			t.Errorf("expected v1.0.0 notes preserved, got:\n%s", got)
 		}
 
-		t.Logf("CHANGELOG.md after step 4:\n%s", got)
 	})
 
 	t.Run("basic -- nothing in file", func(t *testing.T) {
-		dir := writeChangelog(t, baseContent)
+		// With auto-insert, a missing version header is no longer an error —
+		// it's inserted at the top. Use a completely empty file to force an error.
+		dir := writeChangelog(t, "")
 
 		err := Run(Options{
 			Tag:   "v9.9.9",
@@ -259,8 +260,13 @@ func TestProcess(t *testing.T) {
 			Date:  "2026-01-01",
 			Path:  dir,
 		})
-		if err == nil {
-			t.Error("expected an error for missing version header, got nil")
+		if err != nil {
+			t.Fatalf("unexpected error on empty file: %v", err)
+		}
+
+		got := readChangelog(t, dir)
+		if !strings.Contains(got, "## v9.9.9 - 2026-01-01") {
+			t.Errorf("expected v9.9.9 header after insert, got:\n%s", got)
 		}
 	})
 }

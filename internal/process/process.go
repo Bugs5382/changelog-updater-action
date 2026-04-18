@@ -37,7 +37,7 @@ type Options struct {
 	DryRun bool
 }
 
-// Run Lets go!
+// Run Let's go!
 func Run(opts Options) error {
 	// tag check
 	if opts.Tag == "" {
@@ -100,16 +100,42 @@ func Run(opts Options) error {
 		newLines = append(newLines, line)
 	}
 
-	// Edge Case: What if this is a brand-new release and the header isn't in the file yet?
-	// You might want to inject it right after the root "# Changelog" header here.
+	// Brand-new release: the version header isn't in the file yet. Insert it
+	// at the top of the changelog, right after the first top-level "# " title
+	// (if present), otherwise at the very top.
 	if !foundVersion {
-		log.Trace().Msgf("%s Version header not found in file. Ensure the file has a matching header: %s", emoji.TestTube.String(), targetHeader)
-		// For now, returning an error, but you could implement an insert-at-top logic here!
-		return fmt.Errorf("version %s not found in changelog", opts.Tag)
+		log.Debug().Msgf("%s Version %s not found; inserting new entry at top", emoji.TestTube.String(), opts.Tag)
+
+		header := fmt.Sprintf("## %s - %s", opts.Tag, opts.Date)
+		// Leading blank line guarantees separation from the title above.
+		entry := []string{"", header, "", strings.TrimSpace(opts.Notes), ""}
+
+		insertAt := 0
+		for i, line := range newLines {
+			if strings.HasPrefix(line, "# ") {
+				// Insert immediately after the title line.
+				insertAt = i + 1
+				// If the title is already followed by a blank line, skip it so
+				// we don't end up with two consecutive blanks.
+				if insertAt < len(newLines) && strings.TrimSpace(newLines[insertAt]) == "" {
+					// Drop our entry's own leading blank since one already exists.
+					entry = entry[1:]
+				}
+				break
+			}
+		}
+
+		// Splice entry into newLines at insertAt.
+		merged := make([]string, 0, len(newLines)+len(entry))
+		merged = append(merged, newLines[:insertAt]...)
+		merged = append(merged, entry...)
+		merged = append(merged, newLines[insertAt:]...)
+		newLines = merged
 	}
 
 	// Write back to the file
 	output := strings.Join(newLines, "\n")
+	output = normalizeSpacing(output)
 
 	// os.FileMode 0644 is standard for text files (read/write for owner, read for others)
 	err = os.WriteFile(targetFile, []byte(output), 0644)
@@ -118,6 +144,55 @@ func Run(opts Options) error {
 	}
 
 	return nil
+}
+
+// normalizeSpacing rewrites the changelog so every markdown heading has
+// exactly one blank line before it (except when it's the first line of
+// the file), and collapses any runs of 2+ consecutive blank lines into a
+// single blank line. It also guarantees the file ends with exactly one
+// trailing newline.
+func normalizeSpacing(text string) string {
+	lines := strings.Split(text, "\n")
+	out := make([]string, 0, len(lines))
+
+	isHeading := func(s string) bool {
+		trimmed := strings.TrimLeft(s, " \t")
+		return strings.HasPrefix(trimmed, "# ") ||
+			strings.HasPrefix(trimmed, "## ") ||
+			strings.HasPrefix(trimmed, "### ") ||
+			strings.HasPrefix(trimmed, "#### ") ||
+			strings.HasPrefix(trimmed, "##### ") ||
+			strings.HasPrefix(trimmed, "###### ")
+	}
+
+	for _, line := range lines {
+		if isHeading(line) {
+			// Ensure exactly one blank line before the heading (unless at start).
+			// Trim any trailing blanks we already emitted.
+			for len(out) > 0 && strings.TrimSpace(out[len(out)-1]) == "" {
+				out = out[:len(out)-1]
+			}
+			if len(out) > 0 {
+				out = append(out, "")
+			}
+			out = append(out, line)
+			continue
+		}
+
+		// Collapse multiple consecutive blank lines into a single one.
+		if strings.TrimSpace(line) == "" {
+			if len(out) > 0 && strings.TrimSpace(out[len(out)-1]) == "" {
+				continue
+			}
+		}
+		out = append(out, line)
+	}
+
+	// Trim trailing blank lines, then guarantee one final newline.
+	for len(out) > 0 && strings.TrimSpace(out[len(out)-1]) == "" {
+		out = out[:len(out)-1]
+	}
+	return strings.Join(out, "\n") + "\n"
 }
 
 // shiftHeaders
