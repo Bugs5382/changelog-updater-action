@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/rs/zerolog"
-	flag "github.com/spf13/pflag"
 )
 
 /*
@@ -28,11 +27,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-var keepTemp = flag.Bool("keep-temp", false, "keep temp CHANGELOG.md files after test failure for inspection")
-
-// CHANGELOG.md inside a fresh temp directory, returning the directory path.
-// When -keep-temp is set the directory is NOT registered for auto-cleanup,
-// and its path is printed so you can inspect it.
+// writeChangelog CHANGELOG.md inside a fresh temp directory, returning the directory path.
 func writeChangelog(t *testing.T, content string) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("", "changelog-test-*")
@@ -40,11 +35,7 @@ func writeChangelog(t *testing.T, content string) string {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
 
-	if *keepTemp {
-		t.Logf("temp dir (kept for inspection): %s", dir)
-	} else {
-		t.Cleanup(func() { _ = os.RemoveAll(dir) })
-	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
 
 	if err := os.WriteFile(filepath.Join(dir, "CHANGELOG.md"), []byte(content), 0644); err != nil {
 		t.Fatalf("failed to write temp CHANGELOG.md: %v", err)
@@ -180,8 +171,8 @@ func TestProcess(t *testing.T) {
 
 	t.Run("step 3 -- modify latest version same date", func(t *testing.T) {
 		initial := baseContent +
-			"\n## v1.1.0 - 2026-02-01\n\n" + notesV110 + "\n\n" +
-			"## v1.0.0 - 2026-01-01\n\n" + notesV100 + "\n"
+			"\n## v1.1.0 - 2026-02-01\n\n" + shiftHeaders(notesV110) + "\n\n" +
+			"## v1.0.0 - 2026-01-01\n\n" + shiftHeaders(notesV100) + "\n"
 		dir := writeChangelog(t, initial)
 
 		err := Run(Options{
@@ -210,8 +201,8 @@ func TestProcess(t *testing.T) {
 
 	t.Run("step 4 -- change date and notes of latest version", func(t *testing.T) {
 		initial := baseContent +
-			"\n## v1.1.0 - 2026-02-01\n\n" + notesV110SameDatePatch + "\n\n" +
-			"## v1.0.0 - 2026-01-01\n\n" + notesV100 + "\n"
+			"\n## v1.1.0 - 2026-02-01\n\n" + shiftHeaders(notesV110SameDatePatch) + "\n\n" +
+			"## v1.0.0 - 2026-01-01\n\n" + shiftHeaders(notesV100) + "\n"
 		dir := writeChangelog(t, initial)
 
 		err := Run(Options{
@@ -255,6 +246,8 @@ func TestProcess(t *testing.T) {
 		if !strings.Contains(got, "fix: nil pointer on empty tag input") {
 			t.Errorf("expected v1.0.0 notes preserved, got:\n%s", got)
 		}
+
+		t.Logf("CHANGELOG.md after step 4:\n%s", got)
 	})
 
 	t.Run("basic -- nothing in file", func(t *testing.T) {
