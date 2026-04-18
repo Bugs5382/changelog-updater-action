@@ -211,10 +211,6 @@ func cleanJSONLine(p []byte) []byte {
 			}
 			needComma = true
 		}
-
-		if !dec.More() && inObject == 0 {
-			// Continue loop to pick up closing delim tokens via dec.Token().
-		}
 	}
 
 	return append(out.Bytes(), trailing...)
