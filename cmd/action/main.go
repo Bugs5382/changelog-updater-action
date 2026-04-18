@@ -20,7 +20,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import (
 	"os"
-	"time"
 
 	"github.com/Bugs5382/changelog-updater-action/internal/logging"
 	"github.com/Bugs5382/changelog-updater-action/internal/process"
@@ -42,7 +41,8 @@ func main() {
 	diff := flag.Bool("diff", false, "Show the diff (if any) of changes")
 	dry := flag.Bool("dry", false, "Dry run, make no changes")
 	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
-	date := flag.String("date", time.Now().Format("2006-01-02"), "Release date")
+	date := flag.String("date", "", "Release date (defaults to today when omitted)")
+	cleanup := flag.Bool("cleanup", false, "Re-order existing CHANGELOG.md entries so versions are listed in descending order")
 	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
 
 	// parse
@@ -52,12 +52,13 @@ func main() {
 	logging.Init(*verbose)
 
 	opts := process.Options{
-		Tag:    *tag,
-		Notes:  *notes,
-		Diff:   *diff,
-		DryRun: *dry,
-		Path:   *path,
-		Date:   *date,
+		Tag:     *tag,
+		Notes:   *notes,
+		Diff:    *diff,
+		DryRun:  *dry,
+		Path:    *path,
+		Date:    *date,
+		Cleanup: *cleanup,
 	}
 
 	// start

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/enescakir/emoji"
 	"github.com/rs/zerolog/log"
@@ -30,16 +31,65 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 type Options struct {
-	Tag    string
-	Notes  string
-	Diff   bool
-	DryRun bool
-	Path   string
-	Date   string
+	Tag     string
+	Notes   string
+	Diff    bool
+	DryRun  bool
+	Path    string
+	Date    string
+	Cleanup bool
+}
+
+// ErrCleanupExclusive is returned when --cleanup is combined with any of
+// the version-editing flags (--tag, --notes, --date). Exported so callers
+// and tests can assert against it via errors.Is.
+var ErrCleanupExclusive = errors.New("--cleanup cannot be combined with --tag, --notes, or --date")
+
+// validateCleanupExclusivity enforces that --cleanup is not combined with
+// any of the version-editing flags. It returns a descriptive error naming
+// every offending flag so the user sees them all at once instead of
+// discovering them one failed run at a time.
+func validateCleanupExclusivity(opts Options) error {
+	if !opts.Cleanup {
+		return nil
+	}
+	var offenders []string
+	if opts.Tag != "" {
+		offenders = append(offenders, "--tag")
+	}
+	if opts.Notes != "" {
+		offenders = append(offenders, "--notes")
+	}
+	if opts.Date != "" {
+		offenders = append(offenders, "--date")
+	}
+	if len(offenders) == 0 {
+		return nil
+	}
+	return fmt.Errorf("%w: got %s", ErrCleanupExclusive, strings.Join(offenders, ", "))
 }
 
 // Run Let's go!
 func Run(opts Options) error {
+	// --cleanup is a standalone mode: it must not be combined with --tag,
+	// --notes, or --date. Validate before branching so the error surfaces
+	// regardless of which code path would have run next.
+	if err := validateCleanupExclusivity(opts); err != nil {
+		log.Error().Msgf("%s %s", emoji.Bomb.String(), err)
+		return err
+	}
+
+	if opts.Cleanup {
+		return runCleanup(opts)
+	}
+
+	// Outside of cleanup mode, --date defaults to today when the caller
+	// didn't supply one. main.go now passes an empty string when the user
+	// didn't set --date, so we fill the default in here.
+	if opts.Date == "" {
+		opts.Date = time.Now().Format("2006-01-02")
+	}
+
 	// tag check
 	if opts.Tag == "" {
 		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
