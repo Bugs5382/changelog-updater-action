@@ -32,9 +32,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 type Options struct {
 	Tag    string
 	Notes  string
+	Diff   bool
+	DryRun bool
 	Path   string
 	Date   string
-	DryRun bool
 }
 
 // Run Let's go!
@@ -63,7 +64,9 @@ func Run(opts Options) error {
 		return fmt.Errorf("could not read file %s: %w", targetFile, err)
 	}
 
-	lines := strings.Split(string(content), "\n")
+	original := string(content)
+
+	lines := strings.Split(original, "\n")
 	var newLines []string
 
 	replacing := false
@@ -136,6 +139,18 @@ func Run(opts Options) error {
 	// Write back to the file
 	output := strings.Join(newLines, "\n")
 	output = normalizeSpacing(output)
+
+	// When --diff is set, log a human-readable diff between the original file
+	// contents and the freshly generated output before we do anything else.
+	if opts.Diff {
+		logDiff(original, output)
+	}
+
+	// Respect --dry: parse, diff, and log without touching the file.
+	if opts.DryRun {
+		log.Info().Msgf("%s Dry run enabled; %s left unchanged", emoji.TestTube.String(), targetFile)
+		return nil
+	}
 
 	// os.FileMode 0644 is standard for text files (read/write for owner, read for others)
 	err = os.WriteFile(targetFile, []byte(output), 0644)

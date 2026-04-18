@@ -39,11 +39,11 @@ func main() {
 	// setup flags
 	tag := flag.StringP("tag", "t", "", "The release tag name")
 	notes := flag.StringP("notes", "n", "", "The release notes body")
-	_ = flag.Bool("diff", false, "Show the diff (if any) of changes")
+	diff := flag.Bool("diff", false, "Show the diff (if any) of changes")
 	dry := flag.Bool("dry", false, "Dry run, make no changes")
-	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
 	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
 	date := flag.String("date", time.Now().Format("2006-01-02"), "Release date")
+	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
 
 	// parse
 	flag.Parse()
@@ -54,9 +54,10 @@ func main() {
 	opts := process.Options{
 		Tag:    *tag,
 		Notes:  *notes,
+		Diff:   *diff,
+		DryRun: *dry,
 		Path:   *path,
 		Date:   *date,
-		DryRun: *dry,
 	}
 
 	// start
