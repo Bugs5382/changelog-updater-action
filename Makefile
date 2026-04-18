@@ -18,7 +18,7 @@ WORKING_DIR := $(shell pwd)
 GOLIC_VERSION  ?= v0.1.2
 
 VERSION ?= v0.0.0
-GITSHA ?= $(git rev-parse --short HEAD)
+GITSHA ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 GOOS     ?= $(shell go env GOOS)
 GOARCH   ?= $(shell go env GOARCH)
 LD_FLAGS := "-X 'main.Version=$(VERSION)' -X 'main.Gitsha=$(GITSHA)'"
