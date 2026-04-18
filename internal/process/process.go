@@ -137,7 +137,7 @@ func shiftHeaders(text string) string {
 
 		// If the line starts with '#' and is followed by a space, it's a header
 		if hashCount > 0 && len(line) > hashCount && line[hashCount] == ' ' {
-			lines[i] = "#" + line
+			lines[i] = "##" + line
 		}
 	}
 

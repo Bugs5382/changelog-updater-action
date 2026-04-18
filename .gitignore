@@ -1,6 +1,6 @@
 # Ignore everything
 *
-temp
+.idea
 
 # But not these files...
 !/.gitignore
