@@ -3,10 +3,10 @@
 *
 
 # But not these files...
-
 !*.yaml
 !*.go
 !Makefile
 !Dockerfile
+
 # ...even if they are in subdirectories
 !*/
