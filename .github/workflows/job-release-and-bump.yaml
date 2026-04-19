@@ -82,7 +82,7 @@ jobs:
           chmod +x bin/changelog-updater-action
           LOG_FORMAT=text ./bin/changelog-updater-action \
             -t "$RELEASE_VERSION" \
-            -n \
+            -n "$RELEASE_NOTES" \
             --diff
 
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
