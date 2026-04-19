@@ -14,27 +14,23 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 version: '3'
-
 vars:
   ARTIFACT_NAME: changelog-updater-action
-  VERSION: "{{.VERSION | default \"local\"}}"
+  VERSION: "local"
   GITSHA:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
   GOOS:
     sh: go env GOOS
   GOARCH:
     sh: go env GOARCH
-
 tasks:
   default:
     cmds:
       - task: build
-
   clean:
     desc: Remove build artifacts
     cmds:
       - rm -rf bin/
-
   build:
     desc: Build the binary
     sources:
@@ -49,18 +45,15 @@ tasks:
         -ldflags "-X 'main.Version={{.VERSION}}' -X 'main.Gitsha={{.GITSHA}}'" \
         ./cmd/action
       - chmod +x bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}}
-
   test:
     desc: Run tests
     cmds:
       - go test -v -tags=all -parallel 4 -timeout 2h ./...
-
   lint-init:
     desc: Install linting tools via Brew
     cmds:
       - brew install golangci-lint gitleaks yamllint
       - go install golang.org/x/tools/cmd/goimports@latest
-
   lint:
     desc: Run all linters and formatters
     deps: [license]
@@ -69,22 +62,16 @@ tasks:
       - golangci-lint run
       - yamllint .
       - gitleaks detect . --no-git --verbose --config=.gitleaks.toml
-
   license:
     desc: Dry run for license injection
     cmds:
       - ""
-
-#  license:
-#
-#  license-dry:
-#    desc: Dry run for license injection
-#    deps: [build]
-#    cmds:
-#      - task: golic-run
-#        vars: { ARGS: "-d" }
-
-#  golic-run:
-#    cmds:
-#      - go install github.com/Bugs5382/golic/cmd/golic@latest
-#      - $(go env GOPATH)/bin/golic inject -t isc -c "2026 Shane & Contributors" {{.ARGS}}
+  update-version:
+    desc: Updates the version variable in Taskfile.yml
+    vars:
+      NEW_VERSION: '{{.NEW_VERSION | default .VERSION_ENV | default "local"}}'
+    preconditions:
+      - sh: command -v yq
+        msg: "yq is not installed. Install it via 'brew install yq' or the GitHub Action."
+    cmds:
+      - yq -i '.vars.VERSION = "{{.NEW_VERSION}}"' "{{.TASKFILE_DIR}}/Taskfile.yaml"
