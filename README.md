@@ -83,6 +83,10 @@ Whether you want ease of use or raw execution speed, we've got you covered. This
 * **Portable:** Download the binary directly from our [Releases page](https://www.google.com/search?q=%23) for Linux, macOS, or Windows.
 * **Scriptable:** Perfect for local development hooks or custom CI runners where you want to call the tool directly.
 
+#### 🎛️ Flags
+
+Review [flags](examples/FLAGS.md).
+
 ### Examples
 
 Review the [examples](examples) folder for more information.

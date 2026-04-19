@@ -4,7 +4,9 @@ go 1.26.1
 
 require (
 	github.com/enescakir/emoji v1.0.0
+	github.com/hexops/gotextdiff v1.0.3
 	github.com/rs/zerolog v1.35.0
+	github.com/spf13/pflag v1.0.10
 )
 
 require (

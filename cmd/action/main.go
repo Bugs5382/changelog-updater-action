@@ -3,7 +3,7 @@ package main
 /*
 ISC License
 
-Copyright (c) 2026 Shane
+Copyright (c) 2026 Shane & Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -19,20 +19,61 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 import (
-	"github.com/Bugs5382/changelog-updater-action/cmd/action/init/logging"
+	"os"
+
+	"github.com/Bugs5382/changelog-updater-action/internal/logging"
+	"github.com/Bugs5382/changelog-updater-action/internal/process"
 	"github.com/enescakir/emoji"
 	"github.com/rs/zerolog/log"
+	flag "github.com/spf13/pflag"
 )
 
 var (
 	Version = "local"
-	Gitsha  = "?"
+	Gitsha  = "Unknown"
 )
 
 func main() {
-	logging.Init()
 
-	log.Info().Msgf("%s Changelog Updater Action by Shane", logging.Emj(emoji.Information))
-	log.Debug().Msgf("%s Version: %s", logging.Emj(emoji.Construction), Version)
-	log.Debug().Msgf("%s Build SHA: %s", logging.Emj(emoji.Construction), Gitsha)
+	// setup flags
+	tag := flag.StringP("tag", "t", "", "The release tag name")
+	notes := flag.StringP("notes", "n", "", "The release notes body")
+	diff := flag.Bool("diff", false, "Show the diff (if any) of changes")
+	dry := flag.Bool("dry", false, "Dry run, make no changes")
+	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
+	date := flag.String("date", "", "Release date (defaults to today when omitted)")
+	cleanup := flag.Bool("cleanup", false, "Re-order existing CHANGELOG.md entries so versions are listed in descending order")
+	verbose := flag.BoolP("verbose", "v", false, "Enable debug level logging")
+
+	// parse
+	flag.Parse()
+
+	// setup logging
+	logging.Init(*verbose)
+
+	// options
+	opts := process.Options{
+		Tag:     *tag,
+		Notes:   *notes,
+		Diff:    *diff,
+		DryRun:  *dry,
+		Path:    *path,
+		Date:    *date,
+		Cleanup: *cleanup,
+	}
+
+	// start
+	log.Info().Msgf("%s Changelog Updater Action by Shane", emoji.Information.String())
+	log.Debug().Msgf("%s Version: %s", emoji.Construction.String(), Version)
+	log.Debug().Msgf("%s Build SHA: %s", emoji.Construction.String(), Gitsha)
+
+	// process
+	err := process.Run(opts)
+	if err != nil {
+		log.Error().Msgf("%s Update failed: %s", emoji.Bomb.String(), err)
+		os.Exit(1)
+	}
+
+	log.Info().Msgf("%s Changelog updated successfully", emoji.Rocket.String())
+
 }

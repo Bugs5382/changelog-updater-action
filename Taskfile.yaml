@@ -1,0 +1,90 @@
+# ISC License
+#
+# Copyright (c) 2026 Shane & Contributors
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+version: '3'
+
+vars:
+  ARTIFACT_NAME: changelog-updater-action
+  VERSION: "{{.VERSION | default \"local\"}}"
+  GITSHA:
+    sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
+  GOOS:
+    sh: go env GOOS
+  GOARCH:
+    sh: go env GOARCH
+
+tasks:
+  default:
+    cmds:
+      - task: build
+
+  clean:
+    desc: Remove build artifacts
+    cmds:
+      - rm -rf bin/
+
+  build:
+    desc: Build the binary
+    sources:
+      - ./cmd/action/**/*.go
+      - ./internal/**/*.go
+    generates:
+      - bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}}
+    cmds:
+      - |
+        GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build \
+        -o bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}} \
+        -ldflags "-X 'main.Version={{.VERSION}}' -X 'main.Gitsha={{.GITSHA}}'" \
+        ./cmd/action
+      - chmod +x bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}}
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v -tags=all -parallel 4 -timeout 2h ./...
+
+  lint-init:
+    desc: Install linting tools via Brew
+    cmds:
+      - brew install golangci-lint gitleaks yamllint
+      - go install golang.org/x/tools/cmd/goimports@latest
+
+  lint:
+    desc: Run all linters and formatters
+    deps: [license]
+    cmds:
+      - goimports -w ./
+      - golangci-lint run
+      - yamllint .
+      - gitleaks detect . --no-git --verbose --config=.gitleaks.toml
+
+  license:
+    desc: Dry run for license injection
+    cmds:
+      - ""
+
+#  license:
+#
+#  license-dry:
+#    desc: Dry run for license injection
+#    deps: [build]
+#    cmds:
+#      - task: golic-run
+#        vars: { ARGS: "-d" }
+
+#  golic-run:
+#    cmds:
+#      - go install github.com/Bugs5382/golic/cmd/golic@latest
+#      - $(go env GOPATH)/bin/golic inject -t isc -c "2026 Shane & Contributors" {{.ARGS}}

@@ -13,25 +13,24 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-name: YamlLint
+name: Release Manager
+
 on:
+  workflow_dispatch:
+  workflow_call:
   push:
-    paths-ignore:
-      - '**.md'
-  pull_request:
     branches:
       - main
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+  id-token: write
+
 jobs:
-  lint:
-    name: YamlLint
+  Update_On_Main:
+    name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-
-      - name: YamlLint
-        run: yamllint .
