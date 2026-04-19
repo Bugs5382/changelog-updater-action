@@ -82,7 +82,7 @@ jobs:
           chmod +x bin/changelog-updater-action
           LOG_FORMAT=text ./bin/changelog-updater-action \
             -t "$RELEASE_VERSION" \
-            -notes "$RELEASE_NOTES" \
+            -n "$RELEASE_NOTES" \
             --diff
 
       - name: 📤 Commit and Push Version Update
