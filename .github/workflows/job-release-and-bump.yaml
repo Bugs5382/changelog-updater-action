@@ -74,8 +74,8 @@ jobs:
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
       - name: 📤 Build and Run CHANGELOG.md
         env:
-          # Use Environment Variables to safely store the multi-line string
-          RELEASE_NOTES: ${{ steps.drafter.outputs.body }}
+          RELEASE_NOTES: >-
+            ${{ steps.drafter.outputs.body }}
           RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
         run: |
           go build -o bin/changelog-updater-action ./cmd/action
