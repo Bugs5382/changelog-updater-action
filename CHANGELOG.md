@@ -1,6 +1,6 @@
 # 📝 Changelog Updater Action :: Notes
 
-## v0.2.0-beta.0 - 2026-04-19
+## v0.2.0 - 2026-04-19
 
 ### What Changed 👀
 
