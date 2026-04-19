@@ -22,7 +22,7 @@ In GitLab, you’ll usually pull the binary in the `before_script` or a specific
     - curl -sSL https://github.com/bugs5382/changelog-updater-action/releases/latest/download/changelog-updater-action-linux-amd64 -o changelog-updater-action
     - chmod +x changelog-updater-action
   script:
-    - ./changelog-updater-action --version="$TAG_NAME" --notes="$RELEASE_NOTES"
+    - ./changelog-updater-action --tag="$TAG_NAME" --notes="$RELEASE_NOTES"
 ```
 
 Review [flags](FLAGS.md).
