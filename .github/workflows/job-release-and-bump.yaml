@@ -53,6 +53,11 @@ jobs:
         with:
           go-version: '1.26.x'
 
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
       - name: 📝 Release Drafter (Anticipate Version)
         id: drafter
         uses: release-drafter/release-drafter@v6
