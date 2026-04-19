@@ -1,5 +1,17 @@
 # 📝 Changelog Updater Action :: Notes
 
+## v0.3.0 - 2026-04-19
+
+### What Changed 👀
+
+#### 🚀 Features
+
+- feat: github action @Bugs5382 (#22)
+
+### Extra
+
+**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.2.0...v0.3.0
+
 ## v0.2.0 - 2026-04-19
 
 ### What Changed 👀
