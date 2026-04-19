@@ -19,12 +19,11 @@
 !.golic.yaml
 !.licignore
 !CHANGELOG.md
-!CODEOWNERS
 !Dockerfile
 !README.md
 !LICENSE
-!release-drafter.yml
-!examples/*
 
 # ...even if they are in subdirectories
 !*/
+!examples/*
+!.github/*
