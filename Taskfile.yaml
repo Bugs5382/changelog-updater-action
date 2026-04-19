@@ -40,7 +40,7 @@ tasks:
       - bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}}
     cmds:
       - |
-        GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build \
+        CGO_ENABLED=0 GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build \
         -o bin/{{.ARTIFACT_NAME}}-{{.GOOS}}-{{.GOARCH}} \
         -ldflags "-X 'main.Version={{.VERSION}}' -X 'main.Gitsha={{.GITSHA}}'" \
         ./cmd/action
