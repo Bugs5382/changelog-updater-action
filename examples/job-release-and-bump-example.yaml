@@ -50,11 +50,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🖊️ Update Changelog File
-        uses: Bugs5382/changelog-updater-action@v1
+      - name: 📤 Changelog Action
+        env:
+          RELEASE_NOTES: >-
+            ${{ steps.drafter.outputs.body }}
+          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
+        uses: ./.github/actions
         with:
-          latest-version: ${{ steps.drafter.outputs.tag_name }}
-          release-notes: ${{ steps.drafter.outputs.body }}
+          notes: "$RELEASE_NOTES"
+          tag: "$RELEASE_VERSION"
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
