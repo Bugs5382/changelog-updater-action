@@ -2,15 +2,7 @@
 
 ## v0.2.0 - 2026-04-19
 
-### What Changed 👀
-
-#### 🚀 Features
-
-- feat: added github action file @Bugs5382 (#14)
-
-### Extra
-
-**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.1.0...v0.2.0
+--diff
 
 ## v0.1.0 - 2026-04-19
 
