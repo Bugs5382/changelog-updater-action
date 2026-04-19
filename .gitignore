@@ -18,6 +18,7 @@
 !.golangci.toml
 !.golic.yaml
 !.licignore
+!action.yml
 !CHANGELOG.md
 !Dockerfile
 !README.md

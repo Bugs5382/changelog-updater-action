@@ -88,10 +88,11 @@ jobs:
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
 #      - name: 📤 Run Changelog Action
 #        env:
+#          LOG_FORMAT: text
 #          RELEASE_NOTES: >-
 #            ${{ steps.drafter.outputs.body }}
 #          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-#        uses: ./.github/actions
+#        uses: ./
 #        with:
 #          notes: "$RELEASE_NOTES"
 #          tag: "$RELEASE_VERSION"
