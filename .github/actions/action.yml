@@ -15,6 +15,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 name: 'Changelog Updater Action'
 description: 'Fast changelog updates using pre-compiled Go binaries'
+branding:
+  icon: 'book-open'
+  color: 'yellow'
 
 author: Shane Froebel <sfroebel@therabbithole.com>
 
