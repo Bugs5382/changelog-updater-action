@@ -41,7 +41,6 @@ jobs:
         with:
           fetch-depth: 0
 
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -59,10 +58,10 @@ jobs:
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!.
       - name: Build and Run CHANGELOG.md
         run: |
-          GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build \
+          go build \
             -o bin/changelog-updater-action \
             ./cmd/action
-          chmod +x bin/{{.ARTIFACT_NAME}}
+          chmod +x bin/changelog-updater-action
           LOG_FORMAT=text ./bin/changelog-updater-action -t v${{ steps.drafter.outputs.resolved_version }}  -notes ${{ steps.drafter.outputs.body }} --diff --dry
 
       - name: 📤 Commit and Push Version Update
