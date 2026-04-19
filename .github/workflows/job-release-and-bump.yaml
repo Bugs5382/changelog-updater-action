@@ -72,13 +72,18 @@ jobs:
           task update-version NEW_VERSION=v${{ steps.drafter.outputs.resolved_version }}
 
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
-      - name: Build and Run CHANGELOG.md
+      - name: 📤 Build and Run CHANGELOG.md
+        env:
+          # Use Environment Variables to safely store the multi-line string
+          RELEASE_NOTES: ${{ steps.drafter.outputs.body }}
+          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
         run: |
-          go build \
-            -o bin/changelog-updater-action \
-            ./cmd/action
+          go build -o bin/changelog-updater-action ./cmd/action
           chmod +x bin/changelog-updater-action
-          LOG_FORMAT=text ./bin/changelog-updater-action -t v${{ steps.drafter.outputs.resolved_version }}  -notes ${{ steps.drafter.outputs.body }} --diff --dry
+          LOG_FORMAT=text ./bin/changelog-updater-action \
+            -t "$RELEASE_VERSION" \
+            -notes "$RELEASE_NOTES" \
+            --diff
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
