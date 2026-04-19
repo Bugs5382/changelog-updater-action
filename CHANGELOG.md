@@ -10,7 +10,7 @@
 
 ### Extra
 
-**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.1.0...v0.2.0-beta.0
+**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.1.0...v0.2.0
 
 ## v0.1.0 - 2026-04-19
 
