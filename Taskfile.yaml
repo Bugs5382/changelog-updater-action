@@ -16,7 +16,7 @@
 version: '3'
 vars:
   ARTIFACT_NAME: changelog-updater-action
-  VERSION: "local"
+  VERSION: "v0.1.0"
   GITSHA:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
   GOOS:
