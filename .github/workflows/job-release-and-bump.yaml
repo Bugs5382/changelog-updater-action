@@ -35,10 +35,17 @@ jobs:
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-      # Need to add "App" for git permissions
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3.1.1
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: 📂 Checkout Code
         uses: actions/checkout@v4
         with:
+          token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
 
       - name: Setup Go
@@ -55,7 +62,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!.
+      - name: Set Release Version
+        run: |
+          task update-version NEW_VERSION=v${{ steps.drafter.outputs.resolved_version }}
+
+      # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
       - name: Build and Run CHANGELOG.md
         run: |
           go build \
@@ -92,11 +103,15 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26.1'
+          go-version: '1.26.x'
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
 
       - name: Build Binary
-        run: |
-          make build GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
+        run: task build GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
 
       - name: Upload Binary to Release
         uses: softprops/action-gh-release@v2
