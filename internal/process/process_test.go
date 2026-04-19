@@ -1,18 +1,9 @@
 package process
 
-import (
-	"os"
-	"path/filepath"
-	"strings"
-	"testing"
-
-	"github.com/rs/zerolog"
-)
-
 /*
 ISC License
 
-Copyright (c) 2026 Shane
+Copyright (c) 2026 Shane & Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -26,6 +17,15 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/rs/zerolog"
+)
 
 // writeChangelog CHANGELOG.md inside a fresh temp directory, returning the directory path.
 func writeChangelog(t *testing.T, content string) string {

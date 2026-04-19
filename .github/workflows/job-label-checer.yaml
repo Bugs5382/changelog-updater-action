@@ -1,6 +1,6 @@
 # ISC License
 #
-# Copyright (c) 2026 Shane
+# Copyright (c) 2026 Shane & Contributors
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -22,11 +22,9 @@ on:
       - reopened
       - labeled
       - unlabeled
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 jobs:
   Check_SemVer_Labels:
     name: Check Semver labels

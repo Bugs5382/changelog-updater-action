@@ -1,21 +1,9 @@
 package process
 
-import (
-	"bufio"
-	"fmt"
-	"strings"
-
-	"github.com/enescakir/emoji"
-	"github.com/hexops/gotextdiff"
-	"github.com/hexops/gotextdiff/myers"
-	"github.com/hexops/gotextdiff/span"
-	"github.com/rs/zerolog/log"
-)
-
 /*
 ISC License
 
-Copyright (c) 2026 Shane
+Copyright (c) 2026 Shane & Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -29,6 +17,18 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
+import (
+	"bufio"
+	"fmt"
+	"strings"
+
+	"github.com/enescakir/emoji"
+	"github.com/hexops/gotextdiff"
+	"github.com/hexops/gotextdiff/myers"
+	"github.com/hexops/gotextdiff/span"
+	"github.com/rs/zerolog/log"
+)
 
 const (
 	diffFromLabel = "CHANGELOG.md (before)"

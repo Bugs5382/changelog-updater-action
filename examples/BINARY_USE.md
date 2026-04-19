@@ -6,41 +6,26 @@ If you choose the binary route to save those extra seconds of container startup 
 In GitHub, you typically run this after a step like **Release Drafter** to catch the output variables.
 
 ```yaml
-- name: 📥 Download Changelog Updater
+- name: 📥 Download and 🖊️ Run Changelog Updater
   run: |
     curl -sSL https://github.com/bugs5382/changelog-updater-action/releases/latest/download/changelog-updater-action-linux-amd64 -o changelog-updater-action 
     chmod +x changelog-updater-action
-
-- name: 🖊️ Run Update
-  run: ./changelog-updater-action --tag="${{ steps.drafter.outputs.tag_name }}" --notes="${{ steps.drafter.outputs.body }}"
+    ./changelog-updater-action --tag="${{ steps.drafter.outputs.tag_name }}" --notes="${{ steps.drafter.outputs.body }}"
 ```
 
 ## 🦊 GitLab CI/CD
 In GitLab, you’ll usually pull the binary in the `before_script` or a specific job step. Since GitLab uses standard environment variables, the syntax is even cleaner.
 
 ```yaml
-- name: 📥 Download Changelog Updater
+
   before_script:
     - curl -sSL https://github.com/bugs5382/changelog-updater-action/releases/latest/download/changelog-updater-action-linux-amd64 -o changelog-updater-action
     - chmod +x changelog-updater-action
-
-- name: 🖊️ Run Update
   script:
     - ./changelog-updater-action --version="$TAG_NAME" --notes="$RELEASE_NOTES"
 ```
 
-## 🎛️ Flags
-
-| Flag        | Short | Description                                                      | Default |
-|-------------|-------|------------------------------------------------------------------|---------|
-| `--tag`     | `-t`  | Release tag name, e.g. `v1.2.0`. **Required.**                   | —       |
-| `--notes`   | `-n`  | Release notes body (markdown). **Required.**                     | —       |
-| `--path`    | `-p`  | Directory (relative to the repo root) containing `CHANGELOG.md`. | `.`     |
-| `--date`    |       | Release date injected into the version header (`YYYY-MM-DD`).    | today   |
-| `--diff`    |       | Show the diff (if any) of changes.                               | `false` |
-| `--dry`     |       | Dry run — parse and log without modifying `CHANGELOG.md`.        | `false` |
-| `--verbose` | `-v`  | Enable debug level logging.                                      | `false` |
-
+Review [flags](FLAGS.md).
 
 ## 🏎️ Why the Binary?
 * **Instant Execution:** Zero overhead from Docker daemon startup.

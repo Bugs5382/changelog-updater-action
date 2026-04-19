@@ -35,7 +35,6 @@ jobs:
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-
       - name: 📂 Checkout Code
         uses: actions/checkout@v4
         with:
@@ -50,11 +49,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🖊️ Update Changelog File
-        uses: Bugs5382/changelog-updater-action@v1
-        with:
-          latest-version: ${{ steps.drafter.outputs.tag_name }}
-          release-notes: ${{ steps.drafter.outputs.body }}
+      # This is because we are 
+
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4

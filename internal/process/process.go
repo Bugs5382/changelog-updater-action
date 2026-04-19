@@ -1,21 +1,9 @@
 package process
 
-import (
-	"errors"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
-
-	"github.com/enescakir/emoji"
-	"github.com/rs/zerolog/log"
-)
-
 /*
 ISC License
 
-Copyright (c) 2026 Shane
+Copyright (c) 2026 Shane & Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -29,6 +17,18 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
+import (
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/enescakir/emoji"
+	"github.com/rs/zerolog/log"
+)
 
 type Options struct {
 	Tag     string
@@ -92,13 +92,11 @@ func Run(opts Options) error {
 
 	// tag check
 	if opts.Tag == "" {
-		log.Error().Msgf("%s Missing required --tag flag", emoji.Bomb.String())
 		return errors.New("missing required --tag flag")
 	}
 
 	// notes check
 	if len(opts.Notes) <= 0 {
-		log.Error().Msgf("%s Notes are too short", emoji.Bomb.String())
 		return errors.New("notes are too short")
 	}
 
@@ -110,7 +108,6 @@ func Run(opts Options) error {
 
 	content, err := os.ReadFile(targetFile)
 	if err != nil {
-		log.Error().Msgf("%s could not read file %s: %s", emoji.Bomb.String(), targetFile, err)
 		return fmt.Errorf("could not read file %s: %w", targetFile, err)
 	}
 

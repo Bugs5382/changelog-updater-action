@@ -11,7 +11,7 @@ Update_ChangeLog:
   image: alpine:latest
   before_script:
     - 📦 apk add --no-cache curl git
-    - 📥 curl -sSL https://github.com/bugs5382/changelog-updater-action/releases/latest/download/changelog-updater-action-linux-amd64 -o changelog-updater-action
+    - 📥 curl -sSL https://github.com/Bugs5382/changelog-updater-action/releases/latest/download/changelog-updater-action-linux-amd64 -o changelog-updater-action
     - 🔑 chmod +x changelog-updater-action
   script:
     # Determines your version and notes via environment variables
@@ -37,18 +37,21 @@ Update_ChangeLog:
     - 🚀 /changelog-updater-action --tag="$TAG_NAME" --notes="$RELEASE_NOTES"
 ```
 
-## 🎛️ Flags
+Review [flags](FLAGS.md).
 
-| Flag        | Short | Description                                                      | Default |
-|-------------|-------|------------------------------------------------------------------|---------|
-| `--tag`     | `-t`  | Release tag name, e.g. `v1.2.0`. **Required.**                   | —       |
-| `--notes`   | `-n`  | Release notes body (markdown). **Required.**                     | —       |
-| `--path`    | `-p`  | Directory (relative to the repo root) containing `CHANGELOG.md`. | `.`     |
-| `--date`    |       | Release date injected into the version header (`YYYY-MM-DD`).    | today   |
-| `--diff`    |       | Show the diff (if any) of changes.                               | `false` |
-| `--dry`     |       | Dry run — parse and log without modifying `CHANGELOG.md`.        | `false` |
-| `--verbose` | `-v`  | Enable debug level logging.                                      | `false` |
+## Gitlab CI
 
+```yaml
+update-changelog:
+  image:
+    name: ghcr.io/Bugs5382/changelog-updater-action:v1
+    entrypoint: [""]  # only if you want to override; otherwise omit
+  script:
+    - /usr/local/bin/changelog-updater-action
+        --tag "$CI_COMMIT_TAG"
+        --notes "$RELEASE_NOTES"
+        --path "$CI_PROJECT_DIR"
+```
 
 ## 💡 Key Differences in GitLab
 
