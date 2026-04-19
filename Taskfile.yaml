@@ -59,6 +59,7 @@ tasks:
     desc: Install linting tools via Brew
     cmds:
       - brew install golangci-lint gitleaks yamllint
+      - go install golang.org/x/tools/cmd/goimports@latest
 
   lint:
     desc: Run all linters and formatters
@@ -69,12 +70,12 @@ tasks:
       - yamllint .
       - gitleaks detect . --no-git --verbose --config=.gitleaks.toml
 
+  license:
+    desc: Dry run for license injection
+    cmds:
+      - ""
+
 #  license:
-#    desc: Inject license headers
-#    deps: [build]
-#    cmds:
-#      - task: golic-run
-#        vars: { ARGS: "" }
 #
 #  license-dry:
 #    desc: Dry run for license injection

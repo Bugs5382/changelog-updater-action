@@ -35,10 +35,17 @@ jobs:
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
+      # Need to add "App" for git permissions
       - name: 📂 Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
 
       - name: 📝 Release Drafter (Anticipate Version)
         id: drafter
@@ -49,8 +56,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # This is because we are 
-
+      # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!.
+      - name: Build and Run CHANGELOG.md
+        run: |
+          GOOS={{.GOOS}} GOARCH={{.GOARCH}} go build \
+            -o bin/changelog-updater-action \
+            ./cmd/action
+          chmod +x bin/{{.ARTIFACT_NAME}}
+          LOG_FORMAT=text ./bin/changelog-updater-action -t v${{ steps.drafter.outputs.resolved_version }}  -notes ${{ steps.drafter.outputs.body }} --diff --dry
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
