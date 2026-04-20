@@ -1,5 +1,17 @@
 # 📝 Changelog Updater Action :: Notes
 
+## v0.3.1 - 2026-04-20
+
+### What Changed 👀
+
+#### 🐛 Bug Fixes
+
+- fix: update build @Bugs5382 (#24)
+
+### Extra
+
+**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.3.0...v0.3.1
+
 ## v0.3.0 - 2026-04-19
 
 ### What Changed 👀
