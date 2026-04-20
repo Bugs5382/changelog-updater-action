@@ -51,11 +51,11 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - --tag="${{ inputs.tag }}"
-    - --notes="${{ inputs.notes }}"
+    - --tag=${{ inputs.tag }}
+    - --notes=${{ inputs.notes }}
     - >-
       --path=/github/workspace/${{ inputs.path }}
-    - --date="${{ inputs.date }}"
+    - --date=${{ inputs.date }}
     - --diff=${{ inputs.diff }}
     - --dry=${{ inputs.dry }}
     - --verbose=${{ inputs.verbose }}
