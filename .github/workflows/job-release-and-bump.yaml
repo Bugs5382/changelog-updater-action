@@ -81,8 +81,8 @@ jobs:
           RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
         uses: ./
         with:
-          notes: "$RELEASE_NOTES"
-          tag: "$RELEASE_VERSION"
+          tag: $RELEASE_VERSION
+          notes: $RELEASE_NOTES
           diff: 'true'
 
       - name: 📤 Commit and Push Version Update
