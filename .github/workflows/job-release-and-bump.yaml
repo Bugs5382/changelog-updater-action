@@ -72,31 +72,31 @@ jobs:
           task update-version NEW_VERSION=v${{ steps.drafter.outputs.resolved_version }}
 
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
-      - name: 📤 Build and Run CHANGELOG.md
-        env:
-          RELEASE_NOTES: >-
-            ${{ steps.drafter.outputs.body }}
-          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-        run: |
-          CGO_ENABLED=0 go build -o bin/changelog-updater-action ./cmd/action
-          chmod +x bin/changelog-updater-action
-          LOG_FORMAT=text ./bin/changelog-updater-action \
-            -t "$RELEASE_VERSION" \
-            -n "$RELEASE_NOTES" \
-            --diff
-
-      # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
-#      - name: 📤 Run Changelog Action
+#      - name: 📤 Build and Run CHANGELOG.md
 #        env:
-#          LOG_FORMAT: text
 #          RELEASE_NOTES: >-
 #            ${{ steps.drafter.outputs.body }}
 #          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-#        uses: ./
-#        with:
-#          notes: "$RELEASE_NOTES"
-#          tag: "$RELEASE_VERSION"
-#          diff: 'true'
+#        run: |
+#          CGO_ENABLED=0 go build -o bin/changelog-updater-action ./cmd/action
+#          chmod +x bin/changelog-updater-action
+#          LOG_FORMAT=text ./bin/changelog-updater-action \
+#            -t "$RELEASE_VERSION" \
+#            -n "$RELEASE_NOTES" \
+#            --diff
+
+      # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
+      - name: 📤 Run Changelog Action
+        env:
+          LOG_FORMAT: text
+          RELEASE_NOTES: >-
+            ${{ steps.drafter.outputs.body }}
+          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
+        uses: ./
+        with:
+          notes: "$RELEASE_NOTES"
+          tag: "$RELEASE_VERSION"
+          diff: 'true'
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
