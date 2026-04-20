@@ -72,18 +72,18 @@ jobs:
           task update-version NEW_VERSION=v${{ steps.drafter.outputs.resolved_version }}
 
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
-#      - name: 📤 Build and Run CHANGELOG.md
-#        env:
-#          RELEASE_NOTES: >-
-#            ${{ steps.drafter.outputs.body }}
-#          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-#        run: |
-#          CGO_ENABLED=0 go build -o bin/changelog-updater-action ./cmd/action
-#          chmod +x bin/changelog-updater-action
-#          LOG_FORMAT=text ./bin/changelog-updater-action \
-#            -t "$RELEASE_VERSION" \
-#            -n "$RELEASE_NOTES" \
-#            --diff
+      #      - name: 📤 Build and Run CHANGELOG.md
+      #        env:
+      #          RELEASE_NOTES: >-
+      #            ${{ steps.drafter.outputs.body }}
+      #          RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
+      #        run: |
+      #          CGO_ENABLED=0 go build -o bin/changelog-updater-action ./cmd/action
+      #          chmod +x bin/changelog-updater-action
+      #          LOG_FORMAT=text ./bin/changelog-updater-action \
+      #            -t "$RELEASE_VERSION" \
+      #            -n "$RELEASE_NOTES" \
+      #            --diff
 
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
       - name: 📤 Run Changelog Action
@@ -137,7 +137,6 @@ jobs:
         run: |
           BINARY_NAME="bin/changelog-updater-action-${{ matrix.goos }}-${{ matrix.goarch }}"
           if [ "${{ matrix.goos }}" = "windows" ]; then BINARY_NAME="${BINARY_NAME}.exe"; fi
-          
           go build -v \
             -o "$BINARY_NAME" \
             -ldflags "-s -w -X 'main.Version=${{ github.event.release.tag_name }}' -X 'main.Gitsha=${{ github.sha }}' -extldflags '-static'" \
