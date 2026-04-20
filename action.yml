@@ -30,8 +30,7 @@ inputs:
     description: The release notes you want to add to your CHANGELOG.
   path:
     required: false
-    description: The path to the CHANGELOG.md file relative to the repo root.
-    default: .
+    description: The path to the CHANGELOG.md file relative to the repo root. Default is /github/workspace the working directory for GitHub Actions which is not changable.
   date:
     required: false
     description: The date the latest version has been released. Defaults to the current date.
@@ -54,7 +53,7 @@ runs:
   args:
     - --tag="${{ inputs.tag }}"
     - --notes="${{ inputs.notes }}"
-    - --path="${{ inputs.path }}"
+    - --path="/github/workspace${{ inputs.path }}"
     - --date="${{ inputs.date }}"
     - --diff=${{ inputs.diff }}
     - --dry=${{ inputs.dry }}
