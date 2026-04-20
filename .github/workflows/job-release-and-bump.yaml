@@ -88,6 +88,7 @@ jobs:
       # This is because we are local to ourselves -- do not copy this into your workflow! Review the examples!
       - name: 📤 Run Changelog Action
         env:
+          LOG_LEVEL: debug
           LOG_FORMAT: text
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
