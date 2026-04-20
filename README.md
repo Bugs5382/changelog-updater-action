@@ -44,11 +44,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📤 Changelog Action
+        uses: Bugs5382/changelog-updater-action@v0.3.0
         env:
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
           RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-        uses: ./.github/actions
         with:
           notes: "$RELEASE_NOTES"
           tag: "$RELEASE_VERSION"

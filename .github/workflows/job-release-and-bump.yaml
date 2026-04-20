@@ -103,7 +103,7 @@ jobs:
         with:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
 
-  Build_and_Release:  # Note: I know there are actions that can do this for me.
+  Build_and_Release:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     strategy:
@@ -127,16 +127,21 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.26.x'
-
-      - name: Install Task
-        uses: arduino/setup-task@v2
-        with:
-          version: 3.x
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          cache: true
 
       - name: Build Binary
-        run: task build GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          BINARY_NAME="bin/changelog-updater-action-${{ matrix.goos }}-${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then BINARY_NAME="${BINARY_NAME}.exe"; fi
+          
+          go build -v \
+            -o "$BINARY_NAME" \
+            -ldflags "-s -w -X 'main.Version=${{ github.event.release.tag_name }}' -X 'main.Gitsha=${{ github.sha }}' -extldflags '-static'" \
+            ./cmd/action
 
       - name: Upload Binary to Release
         uses: softprops/action-gh-release@v2
