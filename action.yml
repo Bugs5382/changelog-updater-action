@@ -53,7 +53,7 @@ runs:
   args:
     - --tag="${{ inputs.tag }}"
     - --notes="${{ inputs.notes }}"
-    - --path="/github/workspace${{ inputs.path }}"
+    - --path=/github/workspace/${{ inputs.path }}
     - --date="${{ inputs.date }}"
     - --diff=${{ inputs.diff }}
     - --dry=${{ inputs.dry }}
