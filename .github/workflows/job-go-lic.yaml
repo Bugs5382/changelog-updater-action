@@ -31,5 +31,5 @@ jobs:
       - name: GoLic
         run: |
           export PATH=${PATH}:`go env GOPATH`/bin
-          go install github.com/Bugs5382/golic/cmd/golic@latest
+          go install github.com/Bugs5382/golic/cmd/golic@v0.2.0
           golic inject -c "2026 Shane & Contributors" -t isc -d -x

@@ -28,7 +28,6 @@ jobs:
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-
       - name: 📂 Checkout Code
         uses: actions/checkout@v4
         with:
@@ -37,21 +36,19 @@ jobs:
       - name: 📝 Release Drafter (Anticipate Version)
         id: drafter
         uses: release-drafter/release-drafter@v6
-        with:
-          prerelease: false
-          latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # This is our script action!
       - name: 📤 Changelog Action
-        uses: Bugs5382/changelog-updater-action@v0.3.0
+        uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
         env:
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
           RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
         with:
-          notes: "$RELEASE_NOTES"
-          tag: "$RELEASE_VERSION"
+          tag: ${{ env.RELEASE_VERSION }}
+          notes: ${{ env.RELEASE_NOTES }}
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4

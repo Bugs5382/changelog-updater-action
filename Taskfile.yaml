@@ -23,6 +23,7 @@ vars:
     sh: go env GOOS
   GOARCH:
     sh: go env GOARCH
+  COMMON_LIC: "2026 Shane & Contributors"
 tasks:
   default:
     cmds:
@@ -62,10 +63,29 @@ tasks:
       - golangci-lint run
       - yamllint .
       - gitleaks detect . --no-git --verbose --config=.gitleaks.toml
+  golic-install:
+    desc: Install GoLic
+    cmd: go install github.com/Bugs5382/golic/cmd/golic@v0.2.0
   license:
     desc: Dry run for license injection
+    deps: [golic-install]
     cmds:
-      - ""
+      - golic inject -c "{{.COMMON_LIC}}" -t isc
+  license-dry:
+    desc: Dry run for license injection
+    deps: [golic-install]
+    cmds:
+      - golic inject -c "{{.COMMON_LIC}}" -t isc -d
+  license-remove:
+    desc: Dry run for license remove
+    deps: [golic-install]
+    cmds:
+      - golic remove -c "{{.COMMON_LIC}}" -t isc
+  license-remove-dry:
+    desc: Dry run for license remove
+    deps: [golic-install]
+    cmds:
+      - golic remove -c "{{.COMMON_LIC}}" -t isc -d
   update-version:
     desc: Updates the version variable in Taskfile.yml
     vars:

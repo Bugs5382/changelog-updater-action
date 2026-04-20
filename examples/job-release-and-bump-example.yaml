@@ -35,7 +35,6 @@ jobs:
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-
       - name: 📂 Checkout Code
         uses: actions/checkout@v4
         with:
@@ -44,59 +43,20 @@ jobs:
       - name: 📝 Release Drafter (Anticipate Version)
         id: drafter
         uses: release-drafter/release-drafter@v6
-        with:
-          prerelease: false
-          latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📤 Changelog Action
+        uses: Bugs5382/changelog-updater-action@v0.3.2
         env:
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
           RELEASE_VERSION: v${{ steps.drafter.outputs.resolved_version }}
-        uses: ./.github/actions
         with:
-          notes: "$RELEASE_NOTES"
-          tag: "$RELEASE_VERSION"
+          tag: ${{ env.RELEASE_VERSION }}
+          notes: ${{ env.RELEASE_NOTES }}
 
       - name: 📤 Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
-
-  Build_and_Release:  # Note: I know there are actions that can do this for me.
-    if: github.event_name == 'release'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - goos: linux
-            goarch: amd64
-          - goos: linux
-            goarch: arm64
-          - goos: darwin
-            goarch: amd64
-          - goos: darwin
-            goarch: arm64
-          - goos: windows
-            goarch: amd64
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.26.1'
-
-      - name: Build Binary
-        run: |
-          make build GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }}
-
-      - name: Upload Binary to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: bin/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
