@@ -1,5 +1,9 @@
 # 📝 Changelog Updater Action :: Notes
 
+## "$RELEASE_VERSION" - ""
+
+"$RELEASE_NOTES"
+
 ## v0.3.1 - 2026-04-20
 
 ### What Changed 👀
