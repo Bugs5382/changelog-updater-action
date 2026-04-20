@@ -25,6 +25,7 @@ This workflow integrates with **Release Drafter** — the gold standard for draf
 ```yaml
 jobs:
   Update_On_Main:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     name: 🚀 Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +82,7 @@ Whether you want ease of use or raw execution speed, we've got you covered. This
 **Best for: High-performance pipelines & Local CLI use**
 
 * **Blazing Fast:** Skip the container overhead. Ideal for large-scale monorepos with massive `CHANGELOG.md` files.
-* **Portable:** Download the binary directly from our [Releases page](https://www.google.com/search?q=%23) for Linux, macOS, or Windows.
+* **Portable:** Download the binary directly from our [Releases page](https://github.com/Bugs5382/changelog-updater-action/releases) for Linux, macOS, or Windows.
 * **Scriptable:** Perfect for local development hooks or custom CI runners where you want to call the tool directly.
 
 #### 🎛️ Flags
