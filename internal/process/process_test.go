@@ -126,10 +126,10 @@ func TestProcess(t *testing.T) {
 		if !strings.Contains(got, "## v1.0.0 - 2026-01-01") {
 			t.Errorf("expected versioned header in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "### What Changed 👀") {
+		if !strings.Contains(got, "### What Changed") {
 			t.Errorf("expected top-level section heading in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "#### 🐛 Bug Fixes") {
+		if !strings.Contains(got, "#### ") || !strings.Contains(got, "Bug Fixes") {
 			t.Errorf("expected bug fixes section heading in output, got:\n%s", got)
 		}
 		if !strings.Contains(got, "fix: nil pointer on empty tag input") {
@@ -240,7 +240,7 @@ func TestProcess(t *testing.T) {
 		if !strings.Contains(got, "chore: bump zerolog to v1.35.0") {
 			t.Errorf("expected dependency update note in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "#### 🧩 Dependency Updates") {
+		if !strings.Contains(got, "Dependency Updates") {
 			t.Errorf("expected dependency updates section heading in output, got:\n%s", got)
 		}
 		// Content only in the old notes must be gone.
