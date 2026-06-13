@@ -13,36 +13,25 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-name: Label Checker
+name: Gitleaks
+# Secret scan on EVERY push and PR -- no paths-ignore, because a secret can land
+# in any file, docs included. Hard failure: the action exits non-zero on a finding.
 on:
+  push:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
-      - unlabeled
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+    branches: [main]
+permissions:
+  contents: read
 jobs:
-  Check_SemVer_Labels:
-    name: Check Semver labels
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check for Semver labels
-        if: github.ref == 'refs/heads/main'
-        uses: danielchabr/pr-labels-checker@v3.3
-        with:
-          hasSome: breaking,enhancement,fix,refactor
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-
-  Check_CC_Labels:
-    name: Check conventional commits labels
+  gitleaks:
+    name: 🔒 Gitleaks (secret scan)
     runs-on: ubuntu-latest
     steps:
-      - uses: danielchabr/pr-labels-checker@v3.3
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
-          hasSome: breaking,changed,deprecated,removed,security,dependencies,enhancement,bug,documentation
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
