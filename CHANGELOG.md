@@ -6,7 +6,12 @@
 
 #### 🚀 Features
 
+- feat: add changelog-body input to set or repair release notes @Bugs5382 (#33)
 - feat: build releases with GoReleaser @Bugs5382 (#32)
+
+#### 🐛 Bug Fixes
+
+- fix: build the action binary from source in the Dockerfile @Bugs5382 (#35)
 
 ### Extra
 
