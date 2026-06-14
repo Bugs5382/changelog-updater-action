@@ -59,10 +59,11 @@ func TestRun(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
-		tag     string
-		notes   string
-		wantErr bool
+		name          string
+		tag           string
+		notes         string
+		changelogBody string
+		wantErr       bool
 	}{
 		{
 			name:    "empty tag",
@@ -76,6 +77,12 @@ func TestRun(t *testing.T) {
 			notes:   "",
 			wantErr: true,
 		},
+		{
+			name:    "empty notes and empty body",
+			tag:     "v1.1.0",
+			notes:   "",
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -84,6 +91,7 @@ func TestRun(t *testing.T) {
 
 			opts.Tag = tt.tag
 			opts.Notes = tt.notes
+			opts.ChangelogBody = tt.changelogBody
 
 			err := Run(opts)
 
@@ -118,10 +126,10 @@ func TestProcess(t *testing.T) {
 		if !strings.Contains(got, "## v1.0.0 - 2026-01-01") {
 			t.Errorf("expected versioned header in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "### What Changed 👀") {
+		if !strings.Contains(got, "### What Changed") {
 			t.Errorf("expected top-level section heading in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "#### 🐛 Bug Fixes") {
+		if !strings.Contains(got, "#### ") || !strings.Contains(got, "Bug Fixes") {
 			t.Errorf("expected bug fixes section heading in output, got:\n%s", got)
 		}
 		if !strings.Contains(got, "fix: nil pointer on empty tag input") {
@@ -232,7 +240,7 @@ func TestProcess(t *testing.T) {
 		if !strings.Contains(got, "chore: bump zerolog to v1.35.0") {
 			t.Errorf("expected dependency update note in output, got:\n%s", got)
 		}
-		if !strings.Contains(got, "#### 🧩 Dependency Updates") {
+		if !strings.Contains(got, "Dependency Updates") {
 			t.Errorf("expected dependency updates section heading in output, got:\n%s", got)
 		}
 		// Content only in the old notes must be gone.
@@ -247,6 +255,72 @@ func TestProcess(t *testing.T) {
 			t.Errorf("expected v1.0.0 notes preserved, got:\n%s", got)
 		}
 
+	})
+
+	t.Run("manual body -- overrides notes when both set", func(t *testing.T) {
+		dir := writeChangelog(t, baseContent)
+
+		const manual = "### Manually repaired\n\n- restored release notes after history rewrite"
+
+		err := Run(Options{
+			Tag:           "v2.0.0",
+			Notes:         notesV100, // must be ignored in favor of the manual body
+			ChangelogBody: manual,
+			Date:          "2026-04-01",
+			Path:          dir,
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		got := readChangelog(t, dir)
+
+		if !strings.Contains(got, "## v2.0.0 - 2026-04-01") {
+			t.Errorf("expected versioned header in output, got:\n%s", got)
+		}
+		// The manual body is written verbatim (no header shift applied).
+		if !strings.Contains(got, "### Manually repaired") {
+			t.Errorf("expected manual body heading verbatim in output, got:\n%s", got)
+		}
+		if !strings.Contains(got, "- restored release notes after history rewrite") {
+			t.Errorf("expected manual body line in output, got:\n%s", got)
+		}
+		// None of the drafted notes content should leak through.
+		if strings.Contains(got, "fix: nil pointer on empty tag input") {
+			t.Errorf("expected drafted notes to be ignored when body is set, got:\n%s", got)
+		}
+		// shiftHeaders is NOT applied to the manual body: the "### " heading
+		// stays as-is rather than being demoted to "##### ".
+		if strings.Contains(got, "##### Manually repaired") {
+			t.Errorf("expected manual body headers left unshifted, got:\n%s", got)
+		}
+	})
+
+	t.Run("manual body -- works when notes empty", func(t *testing.T) {
+		// The escape hatch: generation yielded nothing (empty notes) but a
+		// maintainer supplies a body. This must succeed rather than error on
+		// the "notes are too short" check.
+		dir := writeChangelog(t, baseContent)
+
+		err := Run(Options{
+			Tag:           "v3.0.0",
+			Notes:         "", // drafter produced nothing
+			ChangelogBody: "- manual entry for an otherwise empty release",
+			Date:          "2026-05-01",
+			Path:          dir,
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		got := readChangelog(t, dir)
+
+		if !strings.Contains(got, "## v3.0.0 - 2026-05-01") {
+			t.Errorf("expected versioned header in output, got:\n%s", got)
+		}
+		if !strings.Contains(got, "- manual entry for an otherwise empty release") {
+			t.Errorf("expected manual body in output, got:\n%s", got)
+		}
 	})
 
 	t.Run("basic -- nothing in file", func(t *testing.T) {

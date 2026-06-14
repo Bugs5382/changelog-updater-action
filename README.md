@@ -59,6 +59,45 @@ jobs:
 
 View this projects ``job-release-and-version-example.yaml`` inside the [examples](examples) folder.
 
+## 🩹 Manual Override (Repairing a Release)
+
+Sometimes the drafter has nothing to diff against — for example after a history rewrite or force-push orphans the PR↔commit associations — and it emits "No changes". Instead of hand-editing `CHANGELOG.md` after the fact, set the `changelog-body` input. When provided, it is written **verbatim** under the version header and the auto-generated `notes` are ignored. Leave it empty and behavior is unchanged. 🩹
+
+Wire it to `workflow_dispatch` so a maintainer can correct a single release without another tag/push cycle:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version to repair, e.g. v1.2.0
+        required: true
+      changelog-body:
+        description: Changelog body written verbatim under the version header
+        required: true
+
+jobs:
+  Repair_Changelog:
+    name: 🩹 Repair Changelog Entry
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📂 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📤 Changelog Action
+        uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
+        with:
+          tag: ${{ github.event.inputs.tag }}
+          changelog-body: ${{ github.event.inputs.changelog-body }}
+
+      - name: 📤 Commit and Push Repair
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs(changelog): repair ${{ github.event.inputs.tag }} [skip ci]"
+```
+
 ## 🌟 Key Benefits
 * **No Stale Logs:** Your `CHANGELOG.md` is never one version behind. 📉
 * **Automation:** Eliminates the manual "forgot to update the changelog" commit. 🤖

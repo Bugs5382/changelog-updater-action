@@ -38,12 +38,21 @@ type Options struct {
 	Path    string
 	Date    string
 	Cleanup bool
+
+	// ChangelogBody is a manual override for the version's changelog body.
+	// When non-empty it is written verbatim and the drafted Notes are
+	// ignored, providing an escape hatch for when automatic generation
+	// (e.g. Release Drafter) yields "No changes" — for instance after a
+	// history rewrite orphans the PR/commit associations. Unlike Notes, the
+	// body is not passed through shiftHeaders: the maintainer controls the
+	// exact markdown that appears under the version header.
+	ChangelogBody string
 }
 
 // ErrCleanupExclusive is returned when --cleanup is combined with any of
 // the version-editing flags (--tag, --notes, --date). Exported so callers
 // and tests can assert against it via errors.Is.
-var ErrCleanupExclusive = errors.New("--cleanup cannot be combined with --tag, --notes, or --date")
+var ErrCleanupExclusive = errors.New("--cleanup cannot be combined with --tag, --notes, --changelog-body, or --date")
 
 // validateCleanupExclusivity enforces that --cleanup is not combined with
 // any of the version-editing flags. It returns a descriptive error naming
@@ -59,6 +68,9 @@ func validateCleanupExclusivity(opts Options) error {
 	}
 	if opts.Notes != "" {
 		offenders = append(offenders, "--notes")
+	}
+	if opts.ChangelogBody != "" {
+		offenders = append(offenders, "--changelog-body")
 	}
 	if opts.Date != "" {
 		offenders = append(offenders, "--date")
@@ -95,12 +107,21 @@ func Run(opts Options) error {
 		return errors.New("missing required --tag flag")
 	}
 
-	// notes check
-	if len(opts.Notes) <= 0 {
-		return errors.New("notes are too short")
+	// Resolve the body to write under the version header. A manual
+	// --changelog-body takes precedence over the drafted --notes: when it's
+	// set we write it verbatim and skip both the notes check and the header
+	// shift, letting a maintainer repair a release whose generated notes are
+	// empty or wrong without another tag/push cycle. When it's absent we fall
+	// back to the existing behavior: require notes and demote their headers so
+	// they nest cleanly under the version header.
+	if opts.ChangelogBody != "" {
+		opts.Notes = opts.ChangelogBody
+	} else {
+		if len(opts.Notes) <= 0 {
+			return errors.New("notes are too short")
+		}
+		opts.Notes = shiftHeaders(opts.Notes)
 	}
-
-	opts.Notes = shiftHeaders(opts.Notes)
 
 	targetFile := filepath.Join(opts.Path, "CHANGELOG.md")
 

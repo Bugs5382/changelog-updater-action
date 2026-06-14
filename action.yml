@@ -26,8 +26,11 @@ inputs:
     required: true
     description: Semantic version number of the latest release. The value will be used as a heading text and to replace that section.
   notes:
-    required: true
-    description: The release notes you want to add to your CHANGELOG.
+    required: false
+    description: The release notes you want to add to your CHANGELOG. Required unless changelog-body is set.
+  changelog-body:
+    required: false
+    description: Manual changelog body written verbatim under the version header. When set it overrides notes and skips automatic generation. Use it as an escape hatch to set or repair a release when the drafted notes are empty or wrong.
   path:
     required: false
     description: The path to the CHANGELOG.md file relative to the repo root. Default is /github/workspace the working directory for GitHub Actions which is not changable.
@@ -53,6 +56,7 @@ runs:
   args:
     - --tag=${{ inputs.tag }}
     - --notes=${{ inputs.notes }}
+    - --changelog-body=${{ inputs.changelog-body }}
     - >-
       --path=/github/workspace/${{ inputs.path }}
     - --date=${{ inputs.date }}

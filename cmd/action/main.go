@@ -38,6 +38,7 @@ func main() {
 	// setup flags
 	tag := flag.StringP("tag", "t", "", "The release tag name")
 	notes := flag.StringP("notes", "n", "", "The release notes body")
+	changelogBody := flag.String("changelog-body", "", "Manual changelog body written verbatim; overrides --notes when set")
 	diff := flag.Bool("diff", false, "Show the diff (if any) of changes")
 	dry := flag.Bool("dry", false, "Dry run, make no changes")
 	path := flag.StringP("path", "p", ".", "Directory relative to root containing CHANGELOG.md")
@@ -53,13 +54,14 @@ func main() {
 
 	// options
 	opts := process.Options{
-		Tag:     *tag,
-		Notes:   *notes,
-		Diff:    *diff,
-		DryRun:  *dry,
-		Path:    *path,
-		Date:    *date,
-		Cleanup: *cleanup,
+		Tag:           *tag,
+		Notes:         *notes,
+		ChangelogBody: *changelogBody,
+		Diff:          *diff,
+		DryRun:        *dry,
+		Path:          *path,
+		Date:          *date,
+		Cleanup:       *cleanup,
 	}
 
 	// start
