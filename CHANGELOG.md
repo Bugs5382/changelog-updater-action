@@ -1,5 +1,17 @@
 # 📝 Changelog Updater Action :: Notes
 
+## v0.4.0 - 2026-06-14
+
+### What Changed 👀
+
+#### 🚀 Features
+
+- feat: build releases with GoReleaser @Bugs5382 (#32)
+
+### Extra
+
+**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.3.2...v0.4.0
+
 ## v0.3.2 - 2026-04-20
 
 ### What Changed 👀
