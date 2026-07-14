@@ -81,7 +81,6 @@
 
 #### 🚀 Features
 
-- ci: fix job @Bugs5382 (#7. #9, #8, #10)
 - feat: v0.1.0 @Bugs5382 (#3)
 
 ### Extra
