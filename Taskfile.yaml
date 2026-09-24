@@ -17,6 +17,7 @@ version: '3'
 vars:
   ARTIFACT_NAME: changelog-updater-action
   VERSION: "v0.3.2"
+  GOLIC_VERSION: v0.2.0
   GITSHA:
     sh: git rev-parse --short HEAD 2>/dev/null || echo "unknown"
   GOOS:
@@ -24,6 +25,7 @@ vars:
   GOARCH:
     sh: go env GOARCH
   COMMON_LIC: "2026 Shane & Contributors"
+  TEMPLATE_LIC: "isc"
 tasks:
   default:
     cmds:
@@ -67,25 +69,25 @@ tasks:
     desc: Install GoLic
     cmd: go install github.com/Bugs5382/golic/cmd/golic@v0.2.0
   license:
-    desc: Dry run for license injection
-    deps: [golic-install]
+    desc: License injection
     cmds:
-      - golic inject -c "{{.COMMON_LIC}}" -t isc
+      - task: golic-inject-run
+        vars: { ARGS: '-t {{.TEMPLATE_LIC}} -c "{{.COMMON_LIC}}"' }
   license-dry:
     desc: Dry run for license injection
-    deps: [golic-install]
     cmds:
-      - golic inject -c "{{.COMMON_LIC}}" -t isc -d
+      - task: golic-inject-run
+        vars: { ARGS: '-d -t {{.TEMPLATE_LIC}} -c "{{.COMMON_LIC}}"' }
   license-remove:
-    desc: Dry run for license remove
-    deps: [golic-install]
+    desc: License remove
     cmds:
-      - golic remove -c "{{.COMMON_LIC}}" -t isc
+      - task: golic-remove-run
+        vars: { ARGS: '-t {{.TEMPLATE_LIC}} -c "{{.COMMON_LIC}}"' }
   license-remove-dry:
     desc: Dry run for license remove
-    deps: [golic-install]
     cmds:
-      - golic remove -c "{{.COMMON_LIC}}" -t isc -d
+      - task: golic-remove-run
+        vars: { ARGS: '-d -t {{.TEMPLATE_LIC}} -c "{{.COMMON_LIC}}"' }
   update-version:
     desc: Updates the version variable in Taskfile.yml
     vars:
@@ -95,3 +97,13 @@ tasks:
         msg: "yq is not installed. Install it via 'brew install yq' or the GitHub Action."
     cmds:
       - yq -i '.vars.VERSION = "{{.NEW_VERSION}}"' "{{.TASKFILE_DIR}}/Taskfile.yaml"
+  golic-inject-run:
+    internal: true
+    cmds:
+      - go install github.com/Bugs5382/golic/cmd/golic@{{.GOLIC_VERSION}}
+      - "golic inject {{.ARGS}}"
+  golic-remove-run:
+    internal: true
+    cmds:
+      - go install github.com/Bugs5382/golic/cmd/golic@{{.GOLIC_VERSION}}
+      - "golic remove {{.ARGS}}"
