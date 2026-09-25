@@ -1,6 +1,6 @@
-# 📝 Changelog Updater Action
+# Changelog Updater Action 📝
 
-> The **Changelog Updater Action** ensures your `CHANGELOG.md` is always in sync with your upcoming release. By updating the file *during* the CI process, your documentation matches the tag version and source code exactly at the moment of release. 🚀
+> 🚀 The **Changelog Updater Action** ensures your `CHANGELOG.md` is always in sync with your upcoming release. By updating the file *during* the CI process, your documentation matches the tag version and source code exactly at the moment of release.
 
 ## 💡 The Philosophy
 Most tools update the changelog **after** the tag is created, which means the version you just released contains a changelog that doesn't actually mention itself! 🔄
@@ -14,9 +14,9 @@ This action flips the script:
 ## ⚡ Why this Action?
 This project is a high-performance successor to `stefanzweifel/changelog-updater-action`.
 
-* **Powered by Go:** While the original implementation is written in PHP, this version is written in **Go**. 🏎️
-* **Efficiency:** By using Go, the action benefits from faster execution times and more efficient memory usage when processing large Markdown files.
-* **Streamlined CI:** Reduced execution time means faster feedback loops in your GitHub Actions pipelines.
+* 🏎️ **Powered by Go:** While the original implementation is written in PHP, this version is written in **Go**.
+* ⚙️ **Efficiency:** By using Go, the action benefits from faster execution times and more efficient memory usage when processing large Markdown files.
+* ⏱️ **Streamlined CI:** Reduced execution time means faster feedback loops in your GitHub Actions pipelines.
 
 ## 🛠️ Implementation Example
 
@@ -26,22 +26,22 @@ This workflow integrates with **Release Drafter** — the gold standard for draf
 jobs:
   Update_On_Main:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    name: 🚀 Update Changelog & Prep Release
+    name: Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-      - name: 📂 Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 📝 Release Drafter (Anticipate Version)
+      - name: Release Drafter (Anticipate Version)
         id: drafter
         uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # This is our script action!
-      - name: 📤 Changelog Action
+      - name: Changelog Action
         uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
         env:
           RELEASE_NOTES: >-
@@ -51,7 +51,7 @@ jobs:
           tag: ${{ env.RELEASE_VERSION }}
           notes: ${{ env.RELEASE_NOTES }}
 
-      - name: 📤 Commit and Push Version Update
+      - name: Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
@@ -78,53 +78,53 @@ on:
 
 jobs:
   Repair_Changelog:
-    name: 🩹 Repair Changelog Entry
+    name: Repair Changelog Entry
     runs-on: ubuntu-latest
     steps:
-      - name: 📂 Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 📤 Changelog Action
+      - name: Changelog Action
         uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
         with:
           tag: ${{ github.event.inputs.tag }}
           changelog-body: ${{ github.event.inputs.changelog-body }}
 
-      - name: 📤 Commit and Push Repair
+      - name: Commit and Push Repair
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "docs(changelog): repair ${{ github.event.inputs.tag }} [skip ci]"
 ```
 
 ## 🌟 Key Benefits
-* **No Stale Logs:** Your `CHANGELOG.md` is never one version behind. 📉
-* **Automation:** Eliminates the manual "forgot to update the changelog" commit. 🤖
-* **Clean History:** Keeps the rest of your history intact while only modifying the header block. 🧹
-* **CI Friendly:** Uses `[skip ci]` in the commit message to prevent recursive workflow loops. 🔃
+* 📉 **No Stale Logs:** Your `CHANGELOG.md` is never one version behind.
+* 🤖 **Automation:** Eliminates the manual "forgot to update the changelog" commit.
+* 🧹 **Clean History:** Keeps the rest of your history intact while only modifying the header block.
+* 🔃 **CI Friendly:** Uses `[skip ci]` in the commit message to prevent recursive workflow loops.
 
 ## 🚀 Versatile Distribution
 
 Whether you want ease of use or raw execution speed, we've got you covered. This action is distributed in two formats:
 
-### 🐳 Docker Container (Recommended)
+### Docker Container (Recommended)
 
 **Best for: GitHub Actions & GitLab CI/CD**
 
-* **Zero Setup:** No need to install Go or manage dependencies.
-* **Plug & Play:** Works instantly with the `uses:` syntax in GitHub or as a `services/image` in GitLab.
-* **Isolated:** Environment-agnostic and won't conflict with other tools in your pipeline.
+* 🧰 **Zero Setup:** No need to install Go or manage dependencies.
+* 🔌 **Plug & Play:** Works instantly with the `uses:` syntax in GitHub or as a `services/image` in GitLab.
+* 🐳 **Isolated:** Environment-agnostic and won't conflict with other tools in your pipeline.
 
-### ⚡ Pre-compiled Binary
+### Pre-compiled Binary
 
 **Best for: High-performance pipelines & Local CLI use**
 
-* **Blazing Fast:** Skip the container overhead. Ideal for large-scale monorepos with massive `CHANGELOG.md` files.
-* **Portable:** Download the binary directly from our [Releases page](https://github.com/Bugs5382/changelog-updater-action/releases) for Linux, macOS, or Windows.
-* **Scriptable:** Perfect for local development hooks or custom CI runners where you want to call the tool directly.
+* ⚡ **Blazing Fast:** Skip the container overhead. Ideal for large-scale monorepos with massive `CHANGELOG.md` files.
+* 💻 **Portable:** Download the binary directly from our [Releases page](https://github.com/Bugs5382/changelog-updater-action/releases) for Linux, macOS, or Windows.
+* 📜 **Scriptable:** Perfect for local development hooks or custom CI runners where you want to call the tool directly.
 
-#### 🎛️ Flags
+#### Flags
 
 Review [flags](examples/FLAGS.md).
 
@@ -136,9 +136,9 @@ Review the [examples](examples) folder for more information.
 
 We welcome Pull Requests! Please follow these steps:
 
-* **✅ Validation:** Run `make lint` to verify code quality.
-* **🧪 Testing:** New features must include unit tests.
-* **✍️ Security:** All commits must be **signed** (GPG/SSH).
+* ✅ **Validation:** Run `make lint` to verify code quality.
+* 🧪 **Testing:** New features must include unit tests.
+* ✍️ **Security:** All commits must be **signed** (GPG/SSH).
 
 ## ❤️ Acknowledgments
 
