@@ -115,10 +115,17 @@ func Run(opts Options) error {
 	// back to the existing behavior: require notes and demote their headers so
 	// they nest cleanly under the version header.
 	if opts.ChangelogBody != "" {
+		log.Debug().Msgf("%s Using changelog-body verbatim for %s", emoji.Construction.String(), opts.Tag)
 		opts.Notes = opts.ChangelogBody
 	} else {
 		if len(opts.Notes) <= 0 {
 			return errors.New("notes are too short")
+		}
+		// Drop release-drafter v7's missing-baseline warning before the
+		// header shift (#42); it is advice for the release, not notes.
+		opts.Notes = prepareDraftedNotes(opts.Tag, opts.Notes)
+		if strings.TrimSpace(opts.Notes) == "" {
+			return errors.New("notes are empty once the release-drafter baseline warning is removed")
 		}
 		opts.Notes = shiftHeaders(opts.Notes)
 	}

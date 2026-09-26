@@ -27,7 +27,7 @@ inputs:
     description: Semantic version number of the latest release. The value will be used as a heading text and to replace that section.
   notes:
     required: false
-    description: The release notes you want to add to your CHANGELOG. Required unless changelog-body is set.
+    description: The release notes you want to add to your CHANGELOG, usually the body output of release-drafter v7. Headers are nested under the version header, and the release-drafter v7 missing-baseline warning block is removed. Required unless changelog-body is set.
   changelog-body:
     required: false
     description: Manual changelog body written verbatim under the version header. When set it overrides notes and skips automatic generation. Use it as an escape hatch to set or repair a release when the drafted notes are empty or wrong.

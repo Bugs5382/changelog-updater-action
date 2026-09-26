@@ -32,22 +32,22 @@ permissions:
 
 jobs:
   Update_On_Main:
-    name: 🚀 Update Changelog & Prep Release
+    name: Update Changelog & Prep Release
     runs-on: ubuntu-latest
     steps:
-      - name: 📂 Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 📝 Release Drafter (Anticipate Version)
+      - name: Release Drafter (Anticipate Version)
         id: drafter
-        uses: release-drafter/release-drafter@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: release-drafter/release-drafter@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📤 Changelog Action
-        uses: Bugs5382/changelog-updater-action@v0.3.2
+      - name: Changelog Action
+        uses: Bugs5382/changelog-updater-action@v1
         env:
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
@@ -56,7 +56,7 @@ jobs:
           tag: ${{ env.RELEASE_VERSION }}
           notes: ${{ env.RELEASE_NOTES }}
 
-      - name: 📤 Commit and Push Version Update
+      - name: Commit and Push Version Update
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
