@@ -57,7 +57,7 @@ jobs:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
 ```
 
-View this projects ``job-release-and-version-example.yaml`` inside the [examples](examples) folder.
+See [`examples/job-release-and-bump-example.yaml`](examples/job-release-and-bump-example.yaml) for the full workflow.
 
 ### First Release With Release Drafter v7
 
