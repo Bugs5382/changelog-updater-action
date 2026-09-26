@@ -25,10 +25,11 @@ permissions:
   contents: read
 jobs:
   build-test:
-    name: Build & Test
+    name: 🧪 Build & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Go
@@ -46,10 +47,11 @@ jobs:
       - name: Test
         run: go test ./... -cover
   lint:
-    name: GolangCI
+    name: 🔍 GolangCI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Go
@@ -60,4 +62,7 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.12.2
+          # Build from source with the job's Go, so a newer go.mod never
+          # outruns the toolchain the prebuilt binary was compiled with.
+          install-mode: goinstall
           args: --timeout=3m
