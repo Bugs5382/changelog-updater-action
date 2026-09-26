@@ -138,10 +138,12 @@ Review the [examples](examples) folder for more information.
 
 ## 🤝 Contributing
 
-We welcome Pull Requests! Please follow these steps:
+We welcome Pull Requests! The project uses [Task](https://taskfile.dev) for its local commands. Please follow these steps:
 
-* ✅ **Validation:** Run `make lint` to verify code quality.
-* 🧪 **Testing:** New features must include unit tests.
+* 🧰 **Tooling:** Run `task lint-init` once to install golangci-lint, gitleaks and yamllint with Homebrew, plus goimports.
+* ✅ **Validation:** Run `task lint` to add license headers, format imports, and run golangci-lint, yamllint and gitleaks.
+* 🧪 **Testing:** Run `task test`. New features must include unit tests.
+* 🏗️ **Build:** Run `task build` to build the binary into `bin/`.
 * ✍️ **Security:** All commits must be **signed** (GPG/SSH).
 
 ## ❤️ Acknowledgments
