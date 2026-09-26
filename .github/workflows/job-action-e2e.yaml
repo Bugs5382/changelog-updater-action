@@ -1,0 +1,116 @@
+# ISC License
+#
+# Copyright (c) 2026 Shane & Contributors
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+name: Action E2E
+
+# Runs the action itself (uses: ./) the way a consumer does, so a broken
+# action.yml, Dockerfile or argument list fails the PR instead of the first
+# Release Manager run on main (#50).
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE*'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE*'
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: 🧪 Action E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare a scratch changelog
+        run: |
+          mkdir -p e2e
+          printf '# Changelog\n' > e2e/CHANGELOG.md
+
+      - name: Run the action (new entry)
+        uses: ./
+        env:
+          LOG_FORMAT: text
+        with:
+          tag: v9.9.9
+          date: '2026-01-01'
+          path: e2e
+          diff: 'true'
+          verbose: 'true'
+          notes: |
+            # What Changed 👀
+
+            ## 🐛 Bug Fixes
+
+            - fix: first drafted change @someone (#1)
+
+            # Extra
+
+            **Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v9.9.8...v9.9.9
+
+      - name: Check the new entry
+        run: |
+          cat e2e/CHANGELOG.md
+          fail=0
+          grep -qFx '## v9.9.9 - 2026-01-01' e2e/CHANGELOG.md || { echo "missing version header"; fail=1; }
+          grep -qE '^### What Changed' e2e/CHANGELOG.md || { echo "top-level notes heading not nested"; fail=1; }
+          grep -qE '^#### .*Bug Fixes' e2e/CHANGELOG.md || { echo "category heading not nested"; fail=1; }
+          grep -qF 'fix: first drafted change' e2e/CHANGELOG.md || { echo "notes missing"; fail=1; }
+          [ "$fail" -eq 0 ] || exit 1
+
+      - name: Run the action again (same tag)
+        uses: ./
+        with:
+          tag: v9.9.9
+          date: '2026-01-02'
+          path: e2e
+          notes: |
+            # What Changed 👀
+
+            ## 🐛 Bug Fixes
+
+            - fix: second drafted change @someone (#2)
+
+      - name: Check the entry was replaced
+        run: |
+          cat e2e/CHANGELOG.md
+          fail=0
+          count="$(grep -c '^## v9.9.9' e2e/CHANGELOG.md)"
+          [ "$count" -eq 1 ] || { echo "expected one v9.9.9 entry, found $count"; fail=1; }
+          grep -qFx '## v9.9.9 - 2026-01-02' e2e/CHANGELOG.md || { echo "header date not updated"; fail=1; }
+          grep -qF 'fix: second drafted change' e2e/CHANGELOG.md || { echo "new notes missing"; fail=1; }
+          if grep -qF 'fix: first drafted change' e2e/CHANGELOG.md; then echo "old notes left behind"; fail=1; fi
+          [ "$fail" -eq 0 ] || exit 1
+          cp e2e/CHANGELOG.md e2e/before-dry.md
+
+      - name: Run the action (dry run)
+        uses: ./
+        with:
+          tag: v10.0.0
+          path: e2e
+          dry: 'true'
+          changelog-body: '- written by a dry run'
+
+      - name: Check the dry run left the file alone
+        run: cmp e2e/before-dry.md e2e/CHANGELOG.md
