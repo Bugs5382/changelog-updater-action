@@ -1,5 +1,27 @@
 # 📝 Changelog Updater Action :: Notes
 
+## v0.5.0 - 2026-09-26
+
+### What Changed 👀
+
+#### 🚀 Features
+
+- feat: target release-drafter v7 in code, tests and docs @Bugs5382 (#47)
+
+#### 🐛 Bug Fixes
+
+- fix: match the version header exactly instead of by prefix @Bugs5382 (#48)
+
+#### 📄 Documentation
+
+- docs(readme): document the v1 interface and the major tag @Bugs5382 (#49)
+- docs(readme): use the Taskfile commands instead of make @Bugs5382 (#46)
+- docs(readme): apply the lite emoji treatment @Bugs5382 (#40)
+
+### Extra
+
+**Full Changelog**: https://github.com/Bugs5382/changelog-updater-action/compare/v0.4.0...v0.5.0
+
 ## v0.4.1 - 2026-09-26
 
 ### What Changed 👀
