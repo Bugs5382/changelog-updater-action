@@ -139,7 +139,7 @@ func Run(opts Options) error {
 
 	replacing := false
 	foundVersion := false
-	targetHeader := "## " + opts.Tag // e.g., "## v0.1.0"
+	log.Debug().Msgf("%s Looking for an existing \"## %s\" header", emoji.Construction.String(), opts.Tag)
 
 	for _, line := range lines {
 		if replacing {
@@ -150,8 +150,10 @@ func Run(opts Options) error {
 			continue // Skip the old notes
 		}
 
-		// Using HasPrefix allows us to match "## v0.1.0" even if it already has a date
-		if strings.HasPrefix(line, targetHeader) {
+		// Match "## v0.1.0" with or without a date suffix, but only when the
+		// version token equals the tag, so v0.1.1 never matches v0.1.10 and
+		// v0.1.0 never matches v0.1.0-rc.1 (#43).
+		if isVersionHeader(line, opts.Tag) {
 			foundVersion = true
 			replacing = true // Start skipping subsequent lines until the next ##
 

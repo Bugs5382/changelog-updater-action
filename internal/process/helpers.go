@@ -92,3 +92,19 @@ func shiftHeaders(text string) string {
 
 	return strings.Join(lines, "\n")
 }
+
+// isVersionHeader reports whether line is a "## " header for exactly tag. The
+// first token after "## " is compared, so "## v1.0.1 - 2026-01-01" and
+// "## [v1.0.1]" match v1.0.1 but "## v1.0.10" and "## v1.0.1-rc.1" do not
+// (#43). Surrounding brackets are ignored the same way parseHeaderVersion
+// ignores them.
+func isVersionHeader(line, tag string) bool {
+	if !strings.HasPrefix(line, "## ") {
+		return false
+	}
+	fields := strings.Fields(strings.TrimPrefix(line, "## "))
+	if len(fields) == 0 {
+		return false
+	}
+	return strings.Trim(fields[0], "[]()") == tag
+}
