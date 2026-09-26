@@ -42,7 +42,7 @@ jobs:
 
       # This is our script action!
       - name: Changelog Action
-        uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
+        uses: Bugs5382/changelog-updater-action@v1
         env:
           RELEASE_NOTES: >-
             ${{ steps.drafter.outputs.body }}
@@ -91,7 +91,7 @@ jobs:
           fetch-depth: 0
 
       - name: Changelog Action
-        uses: Bugs5382/changelog-updater-action@v0.3.2 # This might not be the latest version!
+        uses: Bugs5382/changelog-updater-action@v1
         with:
           tag: ${{ github.event.inputs.tag }}
           changelog-body: ${{ github.event.inputs.changelog-body }}
@@ -100,6 +100,46 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "docs(changelog): repair ${{ github.event.inputs.tag }} [skip ci]"
+```
+
+## 🎛️ Inputs
+
+Every input is passed as a string. The action has **no outputs**: its result is the updated `CHANGELOG.md` in the workspace, which a later step commits.
+
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `tag` | yes | | Version used in the header, e.g. `v1.2.0`. The entry is written as `## <tag> - <date>`. An existing `## <tag>` entry is replaced, otherwise a new one is inserted under the first `# ` title. |
+| `notes` | unless `changelog-body` is set | | Release notes, usually the Release Drafter `body` output. Headings are nested two levels deeper so they sit under the version header. |
+| `changelog-body` | no | | Body written verbatim under the version header. When set, `notes` is ignored. |
+| `path` | no | repository root | Directory that holds `CHANGELOG.md`, relative to the repository root. |
+| `date` | no | today | Date written in the header. Any string is accepted; `YYYY-MM-DD` is the convention. Today is taken from the action container's clock (UTC). |
+| `diff` | no | `false` | Log a unified diff of the change. |
+| `dry` | no | `false` | Do everything except write `CHANGELOG.md`. |
+| `verbose` | no | `false` | Log at debug level. |
+
+Two environment variables tune the logs: `LOG_LEVEL` (`trace`, `debug`, `info`, `warn`, `error`; overrides `verbose`) and `LOG_FORMAT` (`text` for human-readable lines; the default is JSON with emoji stripped). Set them in the step's `env:`.
+
+The step fails (exit code 1) when:
+
+* `tag` is empty.
+* Both `notes` and `changelog-body` are empty.
+* `CHANGELOG.md` is missing or unreadable at `path`. The action does not create the file; commit one first (an empty file or a `# ` title line is enough).
+* `CHANGELOG.md` cannot be written.
+
+## 🏷️ Versioning
+
+Releases follow [Semantic Versioning](https://semver.org). Pick how tightly to pin:
+
+* `Bugs5382/changelog-updater-action@v1` follows every v1 release. Breaking changes ship under a new major tag, so this is the usual choice.
+* `Bugs5382/changelog-updater-action@v1.0.0` stays on one release.
+* A full commit SHA pins the exact code, which is the safest option for security-sensitive workflows.
+
+The `v1` major tag is moved by hand. After publishing a `vX.Y.Z` GitHub Release, the maintainer points `v1` at it:
+
+```bash
+git fetch --tags
+git tag -fa v1 -m "v1 -> v1.2.3" v1.2.3
+git push origin v1 --force
 ```
 
 ## 🌟 Key Benefits
