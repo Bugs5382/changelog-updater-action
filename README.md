@@ -20,7 +20,7 @@ This project is a high-performance successor to `stefanzweifel/changelog-updater
 
 ## 🛠️ Implementation Example
 
-This workflow integrates with **Release Drafter** — the gold standard for drafting releases — to pull anticipated version names and bodies directly into your file.
+This workflow integrates with **Release Drafter** — the gold standard for drafting releases — to pull anticipated version names and bodies directly into your file. The action is tested against **Release Drafter v7**, which takes its token through the `token` input.
 
 ```yaml
 jobs:
@@ -36,9 +36,9 @@ jobs:
 
       - name: Release Drafter (Anticipate Version)
         id: drafter
-        uses: release-drafter/release-drafter@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: release-drafter/release-drafter@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # This is our script action!
       - name: Changelog Action
@@ -57,7 +57,11 @@ jobs:
           commit_message: "chore(pre-release): v${{ steps.drafter.outputs.resolved_version }} [skip ci]"
 ```
 
-View this projects ``job-release-and-version-example.yaml`` inside the [examples](examples) folder.
+See [`examples/job-release-and-bump-example.yaml`](examples/job-release-and-bump-example.yaml) for the full workflow.
+
+### First Release With Release Drafter v7
+
+Release Drafter v7 needs a previous **published** release to compare against. Without one (the first release of a repository, or after a history rewrite) it lists `* No changes` and appends a warning block for whoever publishes the draft. The action removes that warning block from `notes`, so it never lands in `CHANGELOG.md`, and logs a warning. Write the notes for that one release with the `changelog-body` input (see below); later releases have a baseline and draft normally.
 
 ## 🩹 Manual Override (Repairing a Release)
 
