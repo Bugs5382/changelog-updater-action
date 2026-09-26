@@ -128,7 +128,7 @@ The step fails (exit code 1) when:
 
 ## 🏷️ Versioning
 
-Releases follow [Semantic Versioning](https://semver.org). Pick how tightly to pin:
+Releases follow [Semantic Versioning](https://semver.org). From v1.0.0 the public interface is **stable**: the inputs and their defaults, the conditions that fail the step, and the `## <tag> - <date>` entry format only change in a new major version. Pick how tightly to pin:
 
 * `Bugs5382/changelog-updater-action@v1` follows every v1 release. Breaking changes ship under a new major tag, so this is the usual choice.
 * `Bugs5382/changelog-updater-action@v1.0.0` stays on one release.
