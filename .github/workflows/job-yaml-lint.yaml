@@ -14,17 +14,20 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 name: YamlLint
+# Pull requests only, and not while the PR is a draft. There is no push trigger:
+# the PR run already tested the tree being merged, so nothing reruns on push to
+# a branch or to main.
 on:
-  push:
-    paths-ignore:
-      - '**.md'
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, ready_for_review]
 jobs:
   lint:
     name: YamlLint
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
