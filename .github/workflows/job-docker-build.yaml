@@ -18,19 +18,23 @@ name: Docker Build
 # nothing else in CI builds that image, so a broken Dockerfile only surfaces when
 # the action is actually invoked (e.g. the Release Manager's dogfooded `uses: ./`).
 # Build the image here so Dockerfile regressions fail the PR instead.
+#
+# Pull requests only, and not while the PR is a draft. There is no push trigger:
+# the PR run already tested the tree being merged, so nothing reruns on push to
+# a branch or to main.
 on:
-  push:
-    paths-ignore:
-      - '**.md'
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, ready_for_review]
 permissions:
   contents: read
 jobs:
   docker:
     name: Action image builds
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Build the action image

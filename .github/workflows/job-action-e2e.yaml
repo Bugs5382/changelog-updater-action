@@ -18,16 +18,14 @@ name: Action E2E
 # Runs the action itself (uses: ./) the way a consumer does, so a broken
 # action.yml, Dockerfile or argument list fails the PR instead of the first
 # Release Manager run on main (#50).
+#
+# Pull requests only, and not while the PR is a draft. There is no push trigger:
+# the PR run already tested the tree being merged.
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-      - 'LICENSE*'
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - '**.md'
       - 'LICENSE*'
@@ -38,7 +36,9 @@ permissions:
 jobs:
   e2e:
     name: 🧪 Action E2E
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
